@@ -1,0 +1,25 @@
+# Node.js
+node_modules/
+npm-debug.log
+.env
+
+# SQLite (baza danych)
+*.sqlite
+*.sqlite3
+
+# System plików / IDE
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+
+# EJS cache
+*.ejs~
+
+# Systemy operacyjne
+*.swp
+*.swo
+
+# Wyjścia i testy (opcjonalnie)
+coverage/
