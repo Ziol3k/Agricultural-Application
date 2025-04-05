@@ -1,13 +1,14 @@
 const express = require('express');
-const session = require('express-session');
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const bcrypt = require('bcryptjs');
 const path = require('path');
 require('dotenv').config();
 
-
-const { sequelize, User, Machine, Reservation } = require('./models');
+const { sequelize } = require('./models');
+const sessionConfig = require('./config/session');
+const passportConfig = require('./config/passport');
+const initializeUsers = require('./init/initializeUsers');
+const authRoutes = require('./routes/auth');
+const adminRoutes = require('./routes/admin');
 
 // Inicjalizacja aplikacji
 const app = express();
@@ -21,59 +22,33 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 
 // Sesje
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false
-}));
+sessionConfig(app);
 
 // Passport
+passportConfig();
+
+// Middleware dla sesji Passport
 app.use(passport.initialize());
-app.use(passport.session());
-
-// Strategie logowania
-passport.use(new LocalStrategy(async (username, password, done) => {
-  try {
-    const user = await User.findOne({ where: { username } });
-    if (!user) return done(null, false, { message: 'Nieprawidłowa nazwa użytkownika' });
-
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) return done(null, false, { message: 'Nieprawidłowe hasło' });
-
-    return done(null, user);
-  } catch (err) {
-    return done(err);
-  }
-}));
-
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findByPk(id);
-    done(null, user);
-  } catch (err) {
-    done(err);
-  }
-});
+app.use(passport.session()); // <- Dodaj to tutaj, aby funkcja req.isAuthenticated była dostępna
 
 // Routing
-const machineRoutes = require('./routes/machines');
-const reservationRoutes = require('./routes/reservations');
-const authRoutes = require('./routes/auth');
-const userRoutes = require('./routes/user');
+app.use('/', authRoutes);  // Strona logowania (domyślna strona)
+app.use('/admin', adminRoutes);
 
-app.use('/', authRoutes);
-app.use('/machines', machineRoutes);
-app.use('/reservations', reservationRoutes);
-app.use('/user', userRoutes);
-
-// Strona główna
+// Strona główna - przekierowanie na podstawie stanu zalogowania
 app.get('/', (req, res) => {
-  res.redirect('/login');
+  if (req.isAuthenticated()) {
+    if (req.user.role === 'admin') {
+      return res.redirect('/admin');  // Jeśli użytkownik jest adminem, przekieruj do panelu admina
+    } else {
+      return res.redirect('/user');  // Jeśli użytkownik jest zwykłym użytkownikiem, pozostaje na stronie głównej (lub inne przekierowanie)
+    }
+  }
+  res.redirect('/login');  // Jeśli nie jest zalogowany, przekieruj na stronę logowania
 });
 
-// Uruchomienie serwera
-sequelize.sync().then(() => {
+sequelize.sync({ force: false }).then(async () => {
+  await initializeUsers();  // Inicjalizacja użytkowników
   app.listen(PORT, () => {
     console.log(`🚜 Serwer działa na http://localhost:${PORT}`);
   });

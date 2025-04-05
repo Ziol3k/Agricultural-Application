@@ -10,9 +10,29 @@ router.get('/login', (req, res) => {
 
 // Obsługa logowania
 router.post('/login', passport.authenticate('local', {
-  successRedirect: '/',
   failureRedirect: '/login',
   failureFlash: true
-}));
+}), (req, res) => {
+  console.log('Zalogowany użytkownik:', req.user); // Zobacz, co jest w req.user
+  if (req.user && req.user.role === 'admin') {
+    return res.redirect('/admin');  // Przekierowanie do panelu admina
+  } else if (req.user && req.user.role === 'user') {
+    return res.redirect('/user');  // Przekierowanie dla użytkownika
+  } else {
+    return res.redirect('/login');  // W razie problemów wróć do logowania
+  }
+});
+
+
+
+
+// Wylogowanie
+router.get('/logout', (req, res) => {
+  req.logout((err) => {
+    if (err) { return next(err); }
+    res.redirect('/login');
+  });
+});
+
 
 module.exports = router;

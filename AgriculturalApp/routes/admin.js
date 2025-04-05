@@ -1,77 +1,96 @@
 const express = require('express');
-const { User, Machine } = require('../models'); // Importujemy modele
+const { User, Machine, Reservation } = require('../models');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
+const { isAdmin } = require('../middleware/authMiddleware');
 
-// Strona główna dla admina
-router.get('/', (req, res) => {
-  res.render('admin', { title: 'Panel Administratora' });
-});
 
-// Zarządzanie maszynami
-router.get('/machines', async (req, res) => {
+// Strona główna panelu administratora
+router.get('/', isAdmin, async (req, res) => {
   try {
-    const machines = await Machine.findAll(); // Pobieramy wszystkie maszyny
-    res.render('admin/machines', { title: 'Zarządzanie Maszynami', machines });
-  } catch (error) {
-    console.error(error);
+    // Możesz dodać dane, które chcesz wyświetlić na stronie administracyjnej
+    const users = await User.findAll();
+    const reservations = await Reservation.findAll();
+    const machines = await Machine.findAll();
+
+    res.render('admin/index', {
+      title: 'Panel Administratora',
+      users,
+      reservations,
+      machines,
+      user: req.user  // Przekażemy aktualnie zalogowanego użytkownika
+    });
+  } catch (err) {
+    console.error(err);
     res.status(500).send('Błąd serwera');
   }
 });
 
-// Dodawanie nowej maszyny
-router.get('/machines/new', (req, res) => {
-  res.render('admin/newMachine', { title: 'Dodaj Nową Maszynę' });
-});
+// // Zarządzanie maszynami
+// router.get('/machines', isAdmin, async (req, res) => {  
+//   try {
+//     const machines = await Machine.findAll(); 
+//     res.render('admin/machines', { title: 'Zarządzanie Maszynami', machines });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('Błąd serwera');
+//   }
+// });
 
-router.post('/machines', async (req, res) => {
-  const { name, description, image_url } = req.body;
-  try {
-    await Machine.create({ name, description, image_url });
-    res.redirect('/admin/machines');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Błąd podczas dodawania maszyny');
-  }
-});
+// // Dodawanie nowej maszyny
+// router.get('/machines/new', isAdmin, (req, res) => { 
+//   res.render('admin/newMachine', { title: 'Dodaj Nową Maszynę' });
+// });
 
-// Zarządzanie użytkownikami
-router.get('/users', async (req, res) => {
-  try {
-    const users = await User.findAll(); // Pobieramy wszystkich użytkowników
-    res.render('admin/users', { title: 'Zarządzanie Użytkownikami', users });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Błąd serwera');
-  }
-});
+// router.post('/machines', isAdmin, async (req, res) => { 
+//   const { name, description, image_url } = req.body;
+//   try {
+//     await Machine.create({ name, description, image_url });
+//     res.redirect('/admin/machines');
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('Błąd podczas dodawania maszyny');
+//   }
+// });
 
-// Dodawanie nowego użytkownika
-router.get('/users/new', (req, res) => {
-  res.render('admin/newUser', { title: 'Dodaj Nowego Użytkownika' });
-});
+// // Zarządzanie użytkownikami
+// router.get('/users', isAdmin, async (req, res) => {  
+//   try {
+//     const users = await User.findAll(); 
+//     res.render('admin/users', { title: 'Zarządzanie Użytkownikami', users });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('Błąd serwera');
+//   }
+// });
 
-router.post('/users', async (req, res) => {
-  const { username, password, role } = req.body;
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({ username, password: hashedPassword, role });
-    res.redirect('/admin/users');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Błąd podczas dodawania użytkownika');
-  }
-});
+// // Dodawanie nowego użytkownika
+// router.get('/users/new', isAdmin, (req, res) => { 
+//   res.render('admin/newUser', { title: 'Dodaj Nowego Użytkownika' });
+// });
 
-// Usuwanie użytkownika
-router.post('/users/delete/:id', async (req, res) => {
-  try {
-    const userId = req.params.id;
-    await User.destroy({ where: { id: userId } });
-    res.redirect('/admin/users');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Błąd podczas usuwania użytkownika');
-  }
-});
+// router.post('/users', isAdmin, async (req, res) => {  
+//   const { username, password, role } = req.body;
+//   try {
+//     const hashedPassword = await bcrypt.hash(password, 10);
+//     await User.create({ username, password: hashedPassword, role });
+//     res.redirect('/admin/users');
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('Błąd podczas dodawania użytkownika');
+//   }
+// });
+
+// // Usuwanie użytkownika
+// router.post('/users/delete/:id', isAdmin, async (req, res) => { 
+//   try {
+//     const userId = req.params.id;
+//     await User.destroy({ where: { id: userId } });
+//     res.redirect('/admin/users');
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('Błąd podczas usuwania użytkownika');
+//   }
+// });
 
 module.exports = router;
