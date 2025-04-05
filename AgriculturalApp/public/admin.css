@@ -7,22 +7,22 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-image: url('./images/bg.png'); /* Twoje tło */
+    background-image: url('./images/bg.png');
     background-size: cover;
     background-position: center;
     min-height: 100vh;
-    color: #fff; /* Zapewnia, że tekst będzie widoczny na ciemnym tle */
+    color: #fff; 
 }
 
 /* Nagłówek i nawigacja */
 header {
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Ciemne tło dla nagłówka */
+    background-color: rgba(0, 0, 0, 0.7);
     position: sticky;
     top: 0;
     z-index: 1000;
     display: flex;
-    justify-content: space-between;  /* Rozmieszcza logo i navbar */
+    justify-content: space-between; 
     align-items: center;
     padding: 10px 20px;
 }
@@ -34,17 +34,17 @@ header {
 }
 
 .logo-container .logo {
-    height: auto;         /* Umożliwia automatyczne dopasowanie wysokości logo */
-    width: 100%;          /* Rozciąga logo do szerokości kontenera */
-    max-width: 150px;     /* Ustalamy maksymalną szerokość logo */
-    max-height: 40px;     /* Ustalamy maksymalną wysokość logo */
+    height: auto; 
+    width: 100%;        
+    max-width: 150px;    
+    max-height: 40px;     
 }
 
 /* Navbar */
 .navbar {
     display: flex;
-    justify-content: center; /* Wyśrodkowuje przyciski w navbarze */
-    flex-grow: 1;            /* Pozwoli navbarowi zająć całą dostępną szerokość */
+    justify-content: center; 
+    flex-grow: 1;           
 }
 
 .navbar ul {
@@ -58,7 +58,7 @@ header {
     display: inline-block;
 }
 
-.navbar a {
+.navbar a{
     text-decoration: none;
     color: white;
     font-size: 16px;
@@ -67,10 +67,28 @@ header {
     transition: background-color 0.3s ease;
 }
 
-.navbar a:hover {
+.navbar a:hover{
     background-color: rgba(255, 255, 255, 0.2);
 }
 
+.logout-form {
+    margin-left: auto;  
+}
+
+.logout-btn {
+    background-color: rgba(0, 0, 0, 0);  
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);  
+}
 
 /* Główna zawartość */
 main {
@@ -78,12 +96,12 @@ main {
     height: 100vh;
     margin: 0 auto;
     padding: 30px;
-    background-color: rgba(112, 112, 112, 0.7); /* Lekko przezroczyste tło */
+    background-color: rgba(112, 112, 112, 0.7); 
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     margin-top: 20px;
     margin-bottom: 20px;
-    overflow-y: auto; /* Pozwoli na przewijanie w przypadku dużej zawartości */
+    overflow-y: auto; 
 }
 
 main h1 {
@@ -105,7 +123,7 @@ footer {
 /* Responsywność */
 @media (max-width: 768px) {
     main {
-        width: 90%; /* Zwiększ szerokość kontenera głównego na mniejszych ekranach */
+        width: 90%; 
         padding: 20px;
     }
 
@@ -123,7 +141,7 @@ footer {
     }
 
     .navbar .logo {
-        height: 30px; /* Mniejsze logo na telefonach */
-        max-width: 80px; /* Ustalamy maksymalną szerokość logo na telefonach */
+        height: 30px; 
+        max-width: 80px;
     }
 }

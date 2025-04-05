@@ -1,39 +1,38 @@
-<!-- views/user/index.ejs -->
 <!DOCTYPE html>
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Witaj w systemie</title>
-  <link rel="stylesheet" href="/style.css">
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <title>Panel Użytkownika</title>
+  <link rel="stylesheet" href="/admin.css">
 </head>
-
 <body>
-  <div class="background-wrapper">
-    <div class="overlay"></div>
-    
-    <div class="wrapper">
-      <header>
-        <h1>Witaj w systemie rezerwacji maszyn</h1>
-        <nav>
-          <a href="/user/reservations" class="btn">Zobacz Rezerwacje</a>
-        </nav>
-      </header>
-
-      <section>
-        <h2>Dostępne maszyny:</h2>
-        <ul class="machines-list">
-          <% machines.forEach(machine => { %>
-            <li class="machine-item">
-              <h3><%= machine.name %></h3>
-              <p><%= machine.description %></p>
-              <img src="<%= machine.image_url %>" alt="<%= machine.name %>" width="200">
-            </li>
-          <% }) %>
-        </ul>
-      </section>
+  <!-- Nagłówek i nawigacja -->
+  <header>
+    <div class="logo-container">
+      <img src="./images/Logo.png" alt="Logo" class="logo">
     </div>
-  </div>
+    <nav class="navbar">
+      <ul>
+        <li><a href="/user">Strona główna</a></li>
+        <li><a href="/user/reservations">Twoje rezerwacje</a></li>
+      </ul>
+    </nav>
+    <!-- Formularz wylogowania -->
+    <form action="/logout" method="GET" class="logout-form">
+      <button type="submit" class="logout-btn">Wyloguj się</button>
+    </form>
+  </header>
+
+  <!-- Główna zawartość -->
+  <main>
+    <h1>Panel Użytkownika</h1>
+    <p>Witaj w panelu użytkownika! Tutaj możesz dokonać nowej rezerwacji oraz zarządać istniejącymi.</p>
+  </main>
+
+  <!-- Stopka -->
+  <footer>
+    <p>&copy; 2025 Jan Zioło. Wszelkie prawa zastrzeżone.</p>
+  </footer>
 </body>
 </html>

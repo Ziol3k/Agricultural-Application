@@ -12,9 +12,9 @@ const Machine = sequelize.define('Machine', {
     },
     image_url: { 
         type: DataTypes.STRING,
-        allowNull: true,  // Możliwość braku obrazu
+        allowNull: true,  
         validate: {
-            isUrl: true, // Sprawdzenie, czy to poprawny URL
+            isUrl: true, 
         }
     }
 });

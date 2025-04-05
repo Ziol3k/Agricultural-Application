@@ -9,6 +9,8 @@ const passportConfig = require('./config/passport');
 const initializeUsers = require('./init/initializeUsers');
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
+const userRoutes = require('./routes/user');
+
 
 // Inicjalizacja aplikacji
 const app = express();
@@ -29,26 +31,28 @@ passportConfig();
 
 // Middleware dla sesji Passport
 app.use(passport.initialize());
-app.use(passport.session()); // <- Dodaj to tutaj, aby funkcja req.isAuthenticated była dostępna
+app.use(passport.session()); 
 
 // Routing
-app.use('/', authRoutes);  // Strona logowania (domyślna strona)
+app.use('/', authRoutes);  
 app.use('/admin', adminRoutes);
+app.use('/user', userRoutes);
+
 
 // Strona główna - przekierowanie na podstawie stanu zalogowania
 app.get('/', (req, res) => {
   if (req.isAuthenticated()) {
     if (req.user.role === 'admin') {
-      return res.redirect('/admin');  // Jeśli użytkownik jest adminem, przekieruj do panelu admina
+      return res.redirect('/admin'); 
     } else {
-      return res.redirect('/user');  // Jeśli użytkownik jest zwykłym użytkownikiem, pozostaje na stronie głównej (lub inne przekierowanie)
+      return res.redirect('/user');  
     }
   }
-  res.redirect('/login');  // Jeśli nie jest zalogowany, przekieruj na stronę logowania
+  res.redirect('/login'); 
 });
 
 sequelize.sync({ force: false }).then(async () => {
-  await initializeUsers();  // Inicjalizacja użytkowników
+  await initializeUsers(); 
   app.listen(PORT, () => {
     console.log(`🚜 Serwer działa na http://localhost:${PORT}`);
   });

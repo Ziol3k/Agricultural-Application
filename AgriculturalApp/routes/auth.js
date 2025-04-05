@@ -13,24 +13,21 @@ router.post('/login', passport.authenticate('local', {
   failureRedirect: '/login',
   failureFlash: true
 }), (req, res) => {
-  console.log('Zalogowany użytkownik:', req.user); // Zobacz, co jest w req.user
+  console.log('Zalogowany użytkownik:', req.user);
   if (req.user && req.user.role === 'admin') {
-    return res.redirect('/admin');  // Przekierowanie do panelu admina
+    return res.redirect('/admin');
   } else if (req.user && req.user.role === 'user') {
-    return res.redirect('/user');  // Przekierowanie dla użytkownika
+    return res.redirect('/user');
   } else {
-    return res.redirect('/login');  // W razie problemów wróć do logowania
+    return res.redirect('/login');
   }
 });
-
-
-
 
 // Wylogowanie
 router.get('/logout', (req, res) => {
   req.logout((err) => {
     if (err) { return next(err); }
-    res.redirect('/login');
+    res.redirect('/');
   });
 });
 

@@ -6,7 +6,7 @@ async function initializeUsers() {
   if (!admin) {
     await User.create({
       username: 'admin',
-      password: 'admin123',  // Pamiętaj, aby zahashować hasło w rzeczywistej aplikacji
+      password: 'admin123', 
       role: 'admin'
     });
     console.log('🛠️ Konto admina zostało utworzone (admin/admin123)');
@@ -17,7 +17,7 @@ async function initializeUsers() {
   if (!testUser) {
     await User.create({
       username: 'testuser',
-      password: 'user123',  // Pamiętaj, aby zahashować hasło w rzeczywistej aplikacji
+      password: 'user123', 
       role: 'user'
     });
     console.log('👤 Konto użytkownika zostało utworzone (testuser/user123)');
