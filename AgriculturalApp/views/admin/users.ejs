@@ -1,0 +1,49 @@
+<!-- views/admin/users.ejs -->
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/style.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="background-wrapper">
+    <div class="overlay"></div>
+    
+    <div class="wrapper">
+      <header>
+        <h1>Zarządzanie Użytkownikami</h1>
+        <a href="/admin/users/new" class="btn">Dodaj Nowego Użytkownika</a>
+      </header>
+
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Użytkownik</th>
+            <th>Rola</th>
+            <th>Akcje</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach(user => { %>
+            <tr>
+              <td><%= user.id %></td>
+              <td><%= user.username %></td>
+              <td><%= user.role %></td>
+              <td>
+                <form action="/admin/users/delete/<%= user.id %>" method="POST" style="display:inline;">
+                  <button type="submit" class="btn-delete">Usuń</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

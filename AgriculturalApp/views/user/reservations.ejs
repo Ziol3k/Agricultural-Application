@@ -1,0 +1,60 @@
+<!-- views/user/reservations.ejs -->
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rezerwacje</title>
+  <link rel="stylesheet" href="/style.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="background-wrapper">
+    <div class="overlay"></div>
+    
+    <div class="wrapper">
+      <header>
+        <h1>Twoje Rezerwacje</h1>
+        <a href="/user/index" class="btn">Powrót do strony głównej</a>
+      </header>
+
+      <section>
+        <h2>Rezerwacje:</h2>
+        <% if (reservations.length > 0) { %>
+          <ul class="reservations-list">
+            <% reservations.forEach(reservation => { %>
+              <li class="reservation-item">
+                <p>Maszyna: <%= reservation.machine.name %></p>
+                <p>Data: <%= reservation.date %></p>
+                <form action="/user/reservations/delete/<%= reservation.id %>" method="POST">
+                  <button type="submit" class="btn-delete">Usuń Rezerwację</button>
+                </form>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p>Nie masz żadnych rezerwacji.</p>
+        <% } %>
+      </section>
+
+      <section>
+        <h2>Dodaj Nową Rezerwację</h2>
+        <form action="/user/reservations" method="POST" class="reservation-form">
+          <label for="machine">Wybierz maszynę:</label>
+          <select name="machine" id="machine" required>
+            <% machines.forEach(machine => { %>
+              <option value="<%= machine.id %>"><%= machine.name %></option>
+            <% }) %>
+          </select>
+          <br>
+          <label for="date">Wybierz datę:</label>
+          <input type="date" name="date" id="date" required>
+          <br>
+          <button type="submit" class="btn-submit">Zarezerwuj</button>
+        </form>
+      </section>
+    </div>
+  </div>
+</body>
+</html>

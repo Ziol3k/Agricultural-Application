@@ -1,0 +1,39 @@
+<!-- views/user/index.ejs -->
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Witaj w systemie</title>
+  <link rel="stylesheet" href="/style.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="background-wrapper">
+    <div class="overlay"></div>
+    
+    <div class="wrapper">
+      <header>
+        <h1>Witaj w systemie rezerwacji maszyn</h1>
+        <nav>
+          <a href="/user/reservations" class="btn">Zobacz Rezerwacje</a>
+        </nav>
+      </header>
+
+      <section>
+        <h2>Dostępne maszyny:</h2>
+        <ul class="machines-list">
+          <% machines.forEach(machine => { %>
+            <li class="machine-item">
+              <h3><%= machine.name %></h3>
+              <p><%= machine.description %></p>
+              <img src="<%= machine.image_url %>" alt="<%= machine.name %>" width="200">
+            </li>
+          <% }) %>
+        </ul>
+      </section>
+    </div>
+  </div>
+</body>
+</html>
