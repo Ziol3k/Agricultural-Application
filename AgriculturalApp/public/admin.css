@@ -101,12 +101,11 @@ main {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     margin-top: 20px;
     margin-bottom: 20px;
-    overflow-y: auto; 
 }
 
 main h1 {
     font-size: 2em;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 /* Stopka */
@@ -118,6 +117,87 @@ footer {
     width: 100%;
     bottom: 0;
     left: 0;
+}
+
+/* Główna zawartość */
+.machines-container {
+    display: block;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-right: 50px;
+    max-height: 70vh;  
+    overflow-y: auto;  
+    padding-right: 30px;
+}
+  
+.machine-item {
+    width: 90%;  
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    margin-left: auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+}
+  
+  .machine-item:hover {
+    transform: scale(1.02);
+  }
+  
+  .machine-header {
+    margin-bottom: 10px;
+  }
+  
+  .machine-name {
+    color: black;
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+  
+  .machine-body {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .machine-image img {
+    max-width: 80px;
+    max-height: 80px;
+    border-radius: 5px;
+    object-fit: cover;
+  }
+  
+  .machine-description {
+    color: black;
+    flex-grow: 1;
+    font-size: 0.9em;
+    line-height: 1.4;
+  }
+  
+.machines-container::-webkit-scrollbar {
+    width: 15px; 
+}
+
+.machines-container::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 10px; 
+    background-clip: content-box; 
+}
+
+.machines-container::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+.machines-container::-webkit-scrollbar-track {
+    background-color: #f1f1f100; 
+    border-radius: 10px; 
+}
+
+/* Opcjonalne stylowanie dla kontenera, żeby suwak nie nachodził na zawartość */
+.machines-container {
+    padding-right: 30px; 
 }
 
 /* Responsywność */

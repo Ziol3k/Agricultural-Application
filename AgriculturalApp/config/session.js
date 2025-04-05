@@ -8,7 +8,7 @@ module.exports = (app) => {
     saveUninitialized: false,  
     cookie: {
       secure: process.env.NODE_ENV === 'production',  // W produkcji cookie będzie bezpieczne. Należy zmienić w ostatecznej wersji
-      maxAge: 1000 * 60
+      maxAge: 1000 * 60 * 60
     }
   }));
 };

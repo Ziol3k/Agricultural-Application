@@ -1,52 +1,55 @@
-<!-- views/admin/machines.ejs -->
 <!DOCTYPE html>
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title %></title>
-  <link rel="stylesheet" href="/style.css">
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <title>Panel Administratora - Maszyny</title>
+  <link rel="stylesheet" href="/admin.css"> <!-- Link do pliku CSS -->
 </head>
-
 <body>
-  <div class="background-wrapper">
-    <div class="overlay"></div>
-    
-    <div class="wrapper">
-      <header>
-        <h1>Zarządzanie Maszynami</h1>
-        <a href="/admin/machines/new" class="btn">Dodaj Nową Maszynę</a>
-      </header>
-
-      <table class="machines-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nazwa</th>
-            <th>Opis</th>
-            <th>Obraz</th>
-            <th>Akcje</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% machines.forEach(machine => { %>
-            <tr>
-              <td><%= machine.id %></td>
-              <td><%= machine.name %></td>
-              <td><%= machine.description %></td>
-              <td><img src="<%= machine.image_url %>" alt="<%= machine.name %>" width="100"></td>
-              <td>
-                <a href="/admin/machines/edit/<%= machine.id %>">Edytuj</a>
-                <form action="/admin/machines/delete/<%= machine.id %>" method="POST" style="display:inline;">
-                  <button type="submit" class="btn-delete">Usuń</button>
-                </form>
-              </td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
+  <!-- Nagłówek i nawigacja -->
+  <header>
+    <div class="logo-container">
+      <img src="./images/Logo.png" alt="Logo" class="logo">
     </div>
-  </div>
+    <nav class="navbar">
+      <ul>
+        <li><a href="/admin">Strona główna</a></li>
+        <li><a href="/admin/machines">Maszyny</a></li>
+        <li><a href="/admin/users">Użytkownicy</a></li>
+      </ul>
+    </nav>
+    <!-- Formularz wylogowania -->
+    <form action="/logout" method="GET" class="logout-form">
+      <button type="submit" class="logout-btn">Wyloguj się</button>
+    </form>
+  </header>
+
+  <!-- Główna zawartość -->
+  <main>
+    <h1>Maszyny</h1>
+    <div class="machines-container">
+      <% machines.forEach(machine => { %> 
+      <div class="machine-item">
+        <div class="machine-header">
+          <h2 class="machine-name"><%= machine.name %></h2>
+        </div>
+        <div class="machine-body">
+          <div class="machine-image">
+            <img src="<%= machine.image_url %>" alt="<%= machine.name %>" class="machine-img">
+          </div>
+          <div class="machine-description">
+            <p><%= machine.description %></p>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+  </main>
+
+  <!-- Stopka -->
+  <footer>
+    <p>&copy; 2025 Jan Zioło. Wszelkie prawa zastrzeżone.</p>
+  </footer>
 </body>
 </html>

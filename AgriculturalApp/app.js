@@ -7,6 +7,7 @@ const { sequelize } = require('./models');
 const sessionConfig = require('./config/session');
 const passportConfig = require('./config/passport');
 const initializeUsers = require('./init/initializeUsers');
+const initializeMachines = require('./init/initializeMachines');
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const userRoutes = require('./routes/user');
@@ -53,6 +54,7 @@ app.get('/', (req, res) => {
 
 sequelize.sync({ force: false }).then(async () => {
   await initializeUsers(); 
+  await initializeMachines();
   app.listen(PORT, () => {
     console.log(`🚜 Serwer działa na http://localhost:${PORT}`);
   });

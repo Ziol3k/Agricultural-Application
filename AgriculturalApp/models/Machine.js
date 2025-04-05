@@ -4,7 +4,7 @@ const sequelize = require('../config/database');
 const Machine = sequelize.define('Machine', {
     name: { 
         type: DataTypes.STRING, 
-        unique: true, 
+        //unique: true, 
         allowNull: false 
     },
     description: { 
@@ -13,9 +13,12 @@ const Machine = sequelize.define('Machine', {
     image_url: { 
         type: DataTypes.STRING,
         allowNull: true,  
-        validate: {
-            isUrl: true, 
-        }
+        // validate: {
+        //     isUrl: {
+        //         args: false,
+        //         msg: 'Image URL must be a valid URL or relative path'
+        //     }
+        // }
     }
 });
 
