@@ -3,20 +3,26 @@ const sequelize = require('../config/database');
 const bcrypt = require('bcryptjs');
 
 const User = sequelize.define('User', {
-    username: { 
-        type: DataTypes.STRING, 
-        unique: true, 
-        allowNull: false 
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
     },
-    password: { 
-        type: DataTypes.STRING, 
-        allowNull: false 
+    username: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false
     },
-    role: { 
-        type: DataTypes.ENUM('user', 'admin'), 
-        allowNull: false 
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    role: {
+        type: DataTypes.ENUM('user', 'admin'),
+        allowNull: false
     }
 });
+
 
 // Haszowanie hasła przed zapisaniem użytkownika
 User.beforeCreate(async (user) => {

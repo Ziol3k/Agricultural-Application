@@ -3,6 +3,7 @@ const { User, Machine, Reservation } = require('../models');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const { isAdmin } = require('../middleware/authMiddleware');
+const uploadMachineImage = require('../middleware/multerMiddleware');
 
 
 // Strona główna panelu administratora
@@ -37,8 +38,11 @@ router.get('/machines', isAdmin, async (req, res) => {
 });
 
 // Dodawanie nowej maszyny
-router.post('/machines', isAdmin, async (req, res) => { 
-  const { name, description, image_url } = req.body;
+router.post('/machines/add', isAdmin, uploadMachineImage, async (req, res) => {
+  console.log('Received POST request at /machines/add');  // Logowanie przychodzącego żądania
+  const { name, description } = req.body;
+  const image_url = req.file ? '/images/machines/' + req.file.filename : null;
+
   try {
     await Machine.create({ name, description, image_url });
     res.redirect('/admin/machines');
@@ -47,6 +51,7 @@ router.post('/machines', isAdmin, async (req, res) => {
     res.status(500).send('Błąd podczas dodawania maszyny');
   }
 });
+
 
 // Zarządzanie użytkownikami
 router.get('/users', isAdmin, async (req, res) => {  

@@ -45,11 +45,43 @@
       </div>
       <% }) %>
     </div>
+
+    <button id="add-machine-btn" class="add-btn">Dodaj maszynę</button>
+
+    <div id="add-machine-modal" class="modal hidden">
+      <form id="add-machine-form" enctype="multipart/form-data" method="POST" action="/machines/add">
+        <h2>Dodaj maszynę</h2>
+
+        <div class="input-box">
+          <input type="text" name="name" placeholder="Nazwa" required>
+        </div>
+
+        <div class="input-box">
+          <textarea name="description" rows="4" placeholder="Opis"></textarea>
+        </div>
+
+        <div class="input-img">
+          <label for="image" class="file-upload-label">
+              <input type="file" id="image" name="image" accept="image/*" required>
+              <span>Wybierz zdjęcie</span>
+          </label>
+        </div>
+
+        <div class="form-buttons">
+          <button type="submit" class="form-btn" id="submit-btn">Zapisz</button>
+          <button type="button" class="form-btn" id="cancel-btn">Anuluj</button>
+        </div>
+      </form>
+    </div>
+    
   </main>
 
   <!-- Stopka -->
   <footer>
     <p>&copy; 2025 Jan Zioło. Wszelkie prawa zastrzeżone.</p>
   </footer>
+
+  <script src="/js/adminMachines.js"></script>
+
 </body>
 </html>

@@ -2,12 +2,6 @@ const { Machine } = require('../models');
 
 const initializeMachines = async () => {
   try {
-    const existingMachines = await Machine.findAll();
-    if (existingMachines.length > 2) {
-      console.log('Maszyny już zostały zainicjalizowane');
-      return;
-    }
-
     await Machine.destroy({ where: {} });
 
     await Machine.create({

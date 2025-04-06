@@ -200,6 +200,160 @@ footer {
     padding-right: 30px; 
 }
 
+
+.add-btn, .form-btn {
+    width: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-top: 10px;
+    height: 45px;
+    background: #fff;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+
+.add-btn:hover {
+    background: #e6e6e6;
+}
+
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+} 
+
+.modal.hidden {
+    display: none;
+}
+
+#add-machine-form {
+    position: relative;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    padding: 30px 40px;
+    border-radius: 10px;
+    min-width: 400px;
+    max-width: 600px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: auto;
+}
+
+.input-box {
+    position: relative;
+    width: 100%;
+    height: auto;
+    margin: 10px 0;
+}
+
+.input-box input,
+.input-box textarea {
+    width: 100%;
+    height: 50px; /* Możesz dostosować w zależności od potrzeb */
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    font-size: 16px;
+    color: #fff;
+    padding: 20px 45px 20px 20px;
+    outline: none;
+    line-height: 1.4; /* Możesz dostosować do swoich potrzeb */
+}
+
+.input-box textarea {
+    overflow: hidden;
+    padding: 20px;
+    height: 100px;
+}
+
+.input-box input::placeholder, textarea::placeholder {
+    color: #fff;
+}
+
+.input-box::-webkit-scrollbar {
+    display: none; 
+}
+
+.input-box i {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: #fff;
+}
+
+.input-img {
+    margin-bottom: 20px; 
+
+}
+
+.input-img label {
+    margin-bottom: 5px; 
+    display: block;
+    padding-left: 20px;
+}
+
+.input-img input {
+    width: 100%; 
+    height: 45px;
+    padding: 10px 0;
+    outline: none;
+}
+
+.input-img input[type="file"] {
+    display: none; 
+}
+
+.input-img .file-upload-label {
+    display: inline-block;
+    padding-left: 20px;
+    padding-right: 20px;
+    height: 45px;
+    background: #fff;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+    text-align: center;
+    line-height: 45px;  
+    width: auto;
+    transition: background 0.3s ease;
+}
+
+.input-img .file-upload-label:hover {
+    background: #e6e6e6;
+}
+
+.input-img .file-upload-label span {
+    display: inline-block;
+    pointer-events: none;  
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: space-between; 
+}
+
+
 /* Responsywność */
 @media (max-width: 768px) {
     main {
