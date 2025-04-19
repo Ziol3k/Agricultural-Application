@@ -1,38 +1,14 @@
 const express = require('express');
-const { Reservation, Machine } = require('../models'); // Importujemy modele
 const router = express.Router();
-const { isUser } = require('../middleware/authMiddleware'); // Zaimportowanie isUser
+const userController = require('../controllers/userController');
+const { isUser } = require('../middleware/authMiddleware'); 
 
-// Strona główna dla użytkownika
-router.get('/', isUser, (req, res) => {  // Dodanie middleware isUser
-  res.render('user', { title: 'Panel Użytkownika' });
-});
+router.get('/', isUser, userController.userDashboard);
 
-// Wyświetlanie rezerwacji użytkownika
-router.get('/reservations', isUser, async (req, res) => {  // Dodanie middleware isUser
-  const reservations = await Reservation.findAll({
-    where: { userId: req.user.id },
-    include: Machine
-  });
-  res.render('user/reservations', { title: 'Twoje Rezerwacje', reservations });
-});
+router.get('/reservations', isUser, userController.showUserReservations);
 
-// Dodawanie rezerwacji
-router.post('/reservations', isUser, async (req, res) => {  // Dodanie middleware isUser
-  const { machineId, date } = req.body;
-  await Reservation.create({
-    machineId,
-    userId: req.user.id,
-    date
-  });
-  res.redirect('/user/reservations');
-});
+router.post('/reservations', isUser, userController.createUserReservation);
 
-// Usuwanie rezerwacji
-router.post('/reservations/delete/:id', isUser, async (req, res) => {  // Dodanie middleware isUser
-  const reservationId = req.params.id;
-  await Reservation.destroy({ where: { id: reservationId } });
-  res.redirect('/user/reservations');
-});
+router.post('/reservations/delete/:id', isUser, userController.deleteUserReservation);
 
 module.exports = router;

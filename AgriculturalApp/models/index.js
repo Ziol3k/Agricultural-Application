@@ -1,3 +1,4 @@
+// models/index.js
 const sequelize = require('../config/database');
 const User = require('./User');
 const Machine = require('./Machine');

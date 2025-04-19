@@ -17,7 +17,6 @@ const userRoutes = require('./routes/user');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -56,6 +55,6 @@ sequelize.sync({ force: false }).then(async () => {
   await initializeUsers(); 
   await initializeMachines();
   app.listen(PORT, () => {
-    console.log(`🚜 Serwer działa na http://localhost:${PORT}`);
+    console.log(`Serwer działa na http://localhost:${PORT}`);
   });
 });
