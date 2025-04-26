@@ -1,3 +1,4 @@
+// controllers/authController.js
 const passport = require('passport');
 
 const renderLoginPage = (req, res) => {

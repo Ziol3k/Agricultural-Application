@@ -12,8 +12,6 @@ const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const userRoutes = require('./routes/user');
 
-
-// Inicjalizacja aplikacji
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -21,25 +19,19 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true })); // Obsługa danych formularza w formacie URL-encoded
+app.use(express.json()); // Obsługa JSON
 
-// Sesje
 sessionConfig(app);
-
-// Passport
 passportConfig();
 
-// Middleware dla sesji Passport
 app.use(passport.initialize());
 app.use(passport.session()); 
 
-// Routing
 app.use('/', authRoutes);  
 app.use('/admin', adminRoutes);
 app.use('/user', userRoutes);
 
-
-// Strona główna - przekierowanie na podstawie stanu zalogowania
 app.get('/', (req, res) => {
   if (req.isAuthenticated()) {
     if (req.user.role === 'admin') {

@@ -1,38 +1,92 @@
+    <!-- views/user/index.ejs -->
 <!DOCTYPE html>
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Użytkownika</title>
-  <link rel="stylesheet" href="/admin.css">
+  <title>Panel użytkownika</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
 </head>
 <body>
-  <!-- Nagłówek i nawigacja -->
   <header>
     <div class="logo-container">
-      <img src="./images/Logo.png" alt="Logo" class="logo">
+      <img src="/images/Logo.png" alt="Logo" class="logo">
     </div>
     <nav class="navbar">
       <ul>
         <li><a href="/user">Strona główna</a></li>
-        <li><a href="/user/reservations">Twoje rezerwacje</a></li>
+        <li><a href="/user/reservations">Moje rezerwacje</a></li>
       </ul>
     </nav>
-    <!-- Formularz wylogowania -->
     <form action="/logout" method="GET" class="logout-form">
       <button type="submit" class="logout-btn">Wyloguj się</button>
     </form>
   </header>
 
-  <!-- Główna zawartość -->
   <main>
-    <h1>Panel Użytkownika</h1>
-    <p>Witaj w panelu użytkownika! Tutaj możesz dokonać nowej rezerwacji oraz zarządać istniejącymi.</p>
+    <h1>Maszyny</h1>
+    <div class="machines-container">
+      <% machines.forEach(machine => { %>
+        <div class="machine-item" data-id="<%= machine.id %>">
+          <div class="machine-header">
+            <h2 class="machine-name"><%= machine.name %></h2>
+          </div>
+          <div class="machine-body">
+            <div class="machine-image">
+              <img src="<%= machine.image_url %>" alt="<%= machine.name %>" class="machine-img">
+            </div>
+            <div class="machine-description">
+              <p><%= machine.description %></p>
+            </div>
+
+
+            <!-- Zakomentowane wyświetlanie dostępności 
+            <div class="machine-availability" style="color: <%= machine.availability?.freeTomorrow ? 'green' : (machine.availability?.availableFrom ? 'orange' : 'gray') %>">
+              <% if (machine.availability && machine.availability.freeTomorrow) { %>
+                <p>Dostępny</p>
+              <% } else if (machine.availability && machine.availability.availableFrom) { %>
+                <p>Dostępny od <%= machine.availability.availableFrom %></p>
+              <% } else { %>
+                <p>Dostępny</p>
+              <% } %>
+            </div>
+            -->
+            
+          </div>
+        </div>
+      <% }); %>
+    </div>
+
+    <!-- Modal rezerwacji -->
+    <div id="reservation-modal" class="modal hidden">
+      <form id="reservation-form" method="POST" action="/user/reserve">
+        <h2>Rezerwacja maszyny</h2>
+        <input type="hidden" id="res-machine-id" name="machine_id" value="">
+        
+        <div class="input-box date-box">
+          <label for="res-start-date">Początek rezerwacji</label>
+          <input type="text" id="res-start-date" name="start_date" placeholder="DD.MM.RRRR" required>
+        </div>
+        <div class="input-box date-box">
+          <label for="res-end-date">Koniec rezerwacji</label>
+          <input type="text" id="res-end-date" name="end_date" placeholder="DD.MM.RRRR" required>
+        </div>
+        
+        <div class="form-buttons">
+          <button type="submit" class="form-btn">Zarezerwuj</button>
+          <button type="button" class="form-btn" id="cancel-reservation-btn">Anuluj</button>
+        </div>
+      </form>
+    </div>
   </main>
 
-  <!-- Stopka -->
   <footer>
     <p>&copy; 2025 Jan Zioło. Wszelkie prawa zastrzeżone.</p>
   </footer>
+
+  <!-- Flatpickr JS -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="/js/user.js"></script>
 </body>
 </html>

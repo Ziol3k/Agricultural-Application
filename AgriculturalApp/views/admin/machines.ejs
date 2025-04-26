@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel Administratora - Maszyny</title>
-  <link rel="stylesheet" href="/admin.css"> <!-- Link do pliku CSS -->
+  <link rel="stylesheet" href="/style.css"> <!-- Link do pliku CSS -->
 </head>
 <body>
   <!-- Nagłówek i nawigacja -->
@@ -30,50 +30,75 @@
     <h1>Maszyny</h1>
     <div class="machines-container">
       <% machines.forEach(machine => { %> 
-      <div class="machine-item">
-        <div class="machine-header">
-          <h2 class="machine-name"><%= machine.name %></h2>
-        </div>
-        <div class="machine-body">
-          <div class="machine-image">
-            <img src="<%= machine.image_url %>" alt="<%= machine.name %>" class="machine-img">
+        <div class="machine-item" data-id="<%= machine.id %>">
+          <div class="machine-header">
+            <h2 class="machine-name"><%= machine.name %></h2>
           </div>
-          <div class="machine-description">
-            <p><%= machine.description %></p>
+          <div class="machine-body">
+            <div class="machine-image">
+              <img src="<%= machine.image_url %>" alt="<%= machine.name %>" class="machine-img">
+            </div>
+            <div class="machine-description">
+              <p><%= machine.description %></p>
+            </div>
           </div>
         </div>
-      </div>
       <% }) %>
     </div>
 
     <button id="add-machine-btn" class="add-btn">Dodaj maszynę</button>
 
+    <!-- Modal dodawania maszyny -->
     <div id="add-machine-modal" class="modal hidden">
       <form id="add-machine-form" enctype="multipart/form-data" method="POST" action="/admin/machines/add">
         <h2>Dodaj maszynę</h2>
-
         <div class="input-box">
           <input type="text" name="name" placeholder="Nazwa" required>
         </div>
-
         <div class="input-box">
           <textarea name="description" rows="4" placeholder="Opis"></textarea>
         </div>
-
         <div class="input-img">
           <label for="image" class="file-upload-label">
-              <input type="file" id="image" name="image" accept="image/*" required>
-              <span>Wybierz zdjęcie</span>
+            <input type="file" id="image" name="image" accept="image/*" required>
+            <span>Wybierz zdjęcie</span>
           </label>
         </div>
-
         <div class="form-buttons">
           <button type="submit" class="form-btn" id="submit-btn">Zapisz</button>
           <button type="button" class="form-btn" id="cancel-btn">Anuluj</button>
         </div>
       </form>
     </div>
-    
+
+    <!-- Modal edycji maszyny -->
+    <div id="edit-machine-modal" class="modal hidden">
+      <form id="edit-machine-form" enctype="multipart/form-data" method="POST" action="">
+        <h2 id="edit-modal-title">Edytuj Maszynę</h2>
+        <div class="input-box">
+          <input type="text" name="name" id="edit-machine-name" placeholder="Nazwa" required>
+        </div>
+        <div class="input-box">
+          <textarea name="description" id="edit-machine-description" rows="4" placeholder="Opis"></textarea>
+        </div>
+        <!-- Kontener dla podglądu zdjęcia i przycisku wyboru -->
+        <div class="image-upload-group">
+          <div class="image-preview">
+            <img id="edit-image-preview" src="" alt="Podgląd zdjęcia" class="hidden">
+          </div>
+          <div class="input-img">
+            <label for="edit-image" class="file-upload-label">
+              <input type="file" id="edit-image" name="image" accept="image/*">
+              <span>Wybierz zdjęcie</span>
+            </label>            
+          </div>
+        </div>
+        <div class="form-buttons">
+          <button type="submit" class="form-btn" id="edit-submit-btn">Zapisz</button>
+          <button type="button" class="form-btn" id="edit-delete-btn">Usuń</button>
+        </div>
+      </form>
+    </div>
   </main>
 
   <!-- Stopka -->
@@ -82,6 +107,5 @@
   </footer>
 
   <script src="/js/adminMachines.js"></script>
-
 </body>
 </html>

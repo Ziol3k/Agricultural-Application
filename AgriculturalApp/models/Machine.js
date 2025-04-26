@@ -22,4 +22,5 @@ const Machine = sequelize.define('Machine', {
     }
 });
 
+
 module.exports = Machine;

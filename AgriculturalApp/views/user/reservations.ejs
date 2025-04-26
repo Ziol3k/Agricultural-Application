@@ -1,60 +1,98 @@
-<!-- views/user/reservations.ejs -->
 <!DOCTYPE html>
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rezerwacje</title>
+  <title>Twoje Rezerwacje</title>
   <link rel="stylesheet" href="/style.css">
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
 </head>
 
 <body>
-  <div class="background-wrapper">
-    <div class="overlay"></div>
-    
-    <div class="wrapper">
-      <header>
-        <h1>Twoje Rezerwacje</h1>
-        <a href="/user/index" class="btn">Powrót do strony głównej</a>
-      </header>
-
-      <section>
-        <h2>Rezerwacje:</h2>
-        <% if (reservations.length > 0) { %>
-          <ul class="reservations-list">
-            <% reservations.forEach(reservation => { %>
-              <li class="reservation-item">
-                <p>Maszyna: <%= reservation.machine.name %></p>
-                <p>Data: <%= reservation.date %></p>
-                <form action="/user/reservations/delete/<%= reservation.id %>" method="POST">
-                  <button type="submit" class="btn-delete">Usuń Rezerwację</button>
-                </form>
-              </li>
-            <% }) %>
-          </ul>
-        <% } else { %>
-          <p>Nie masz żadnych rezerwacji.</p>
-        <% } %>
-      </section>
-
-      <section>
-        <h2>Dodaj Nową Rezerwację</h2>
-        <form action="/user/reservations" method="POST" class="reservation-form">
-          <label for="machine">Wybierz maszynę:</label>
-          <select name="machine" id="machine" required>
-            <% machines.forEach(machine => { %>
-              <option value="<%= machine.id %>"><%= machine.name %></option>
-            <% }) %>
-          </select>
-          <br>
-          <label for="date">Wybierz datę:</label>
-          <input type="date" name="date" id="date" required>
-          <br>
-          <button type="submit" class="btn-submit">Zarezerwuj</button>
-        </form>
-      </section>
+  <header>
+    <div class="logo-container">
+      <a href="/user">
+        <img src="/images/Logo.png" alt="Logo" class="logo">
+      </a>
     </div>
-  </div>
+    <nav class="navbar">
+      <ul>
+        <li><a href="/user">Strona główna</a></li>
+        <li><a href="/user/reservations">Moje rezerwacje</a></li>
+      </ul>
+    </nav>
+    <form action="/logout" method="GET" class="logout-form">
+      <button type="submit" class="logout-btn">Wyloguj się</button>
+    </form>
+  </header>
+
+  <main>
+    <h1>Twoje Rezerwacje</h1>
+
+    <% if (reservations.length > 0) { %>
+      <table class="reservations-table">
+        <thead>
+          <tr>
+            <th>Maszyna</th>
+            <th>Data rozpoczęcia</th>
+            <th>Data zakończenia</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% reservations.forEach(reservation => { %>
+            <tr class="reservation-item" 
+                data-id="<%= reservation.id %>" 
+                data-machine-id="<%= reservation.machineId %>">
+              <td class="reservation-machine">
+                <%= reservation.machine_name || "Brak nazwy maszyny" %> (ID: <%= reservation.machineId || "Brak ID" %>)
+              </td>
+              <td class="reservation-start"><%= reservation.start_date %></td>
+              <td class="reservation-end"><%= reservation.end_date %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <p>Nie dokonałeś jeszcze żadnych rezerwacji.</p>
+    <% } %>
+
+    <!-- Modal edycji rezerwacji -->
+    <div id="edit-reservation-modal" class="modal hidden">
+      <form id="edit-reservation-form" method="POST" action="/user/reservations/edit" autocomplete="off">
+
+        <% reservations.forEach(reservation => { %>
+          <input type="hidden" name="reservationIds[]" value="<%= reservation.id %>">
+        <% }); %>
+
+        <input type="hidden" id="original-start-date" name="original_start_date" value="<%= reservations[0]?.start_date || "" %>">
+        <input type="hidden" id="original-end-date" name="original_end_date" value="<%= reservations[0]?.end_date || "" %>">
+
+        <h2>Edytuj rezerwację</h2>
+
+        <div class="input-box date-box">
+          <label for="res-start-date">Początek rezerwacji</label>
+          <input type="text" id="res-start-date" name="start_date" required>
+        </div>
+
+        <div class="input-box date-box">
+          <label for="res-end-date">Koniec rezerwacji</label>
+          <input type="text" id="res-end-date" name="end_date" required>
+        </div>
+
+        <div class="form-buttons">
+          <button type="submit" class="form-btn">Zapisz zmiany</button>
+          <button type="button" class="form-btn danger-btn" id="delete-reservation-btn">Usuń rezerwację</button>
+        </div>
+      </form>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Jan Zioło. Wszelkie prawa zastrzeżone.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="/js/userReservations.js"></script>
 </body>
 </html>
