@@ -1,126 +1,200 @@
 <!DOCTYPE html>
 <html lang="pl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title %></title>
-  <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-  <header>
-    <div class="logo-container">
-      <img src="./images/Logo.png" alt="Logo" class="logo">
-    </div>
-    <nav class="navbar">
-      <ul>
-        <li><a href="/admin">Strona główna</a></li>
-        <li><a href="/admin/machines">Maszyny</a></li>
-        <li><a href="/admin/users">Użytkownicy</a></li>
-      </ul>
-    </nav>
-    <form action="/logout" method="GET" class="logout-form">
-      <button type="submit" class="logout-btn">Wyloguj się</button>
-    </form>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <!-- Kontener logo oraz nawigacja -->
+      <div class="logo-container">
+        <a href="/admin">
+          <img src="/images/Logo.png" alt="Logo" class="logo" />
+        </a>
+      </div>
+      <nav class="navbar">
+        <ul>
+          <!-- Linki do poszczególnych sekcji panelu administratora -->
+          <li><a href="/admin">Strona główna</a></li>
+          <li><a href="/admin/machines">Maszyny</a></li>
+          <li><a href="/admin/users">Użytkownicy</a></li>
+        </ul>
+      </nav>
+      <!-- Formularz wylogowania -->
+      <form action="/logout" method="GET" class="logout-form">
+        <button type="submit" class="logout-btn">Wyloguj się</button>
+      </form>
+    </header>
 
-  <main>
-    <h1>Zarządzanie Użytkownikami</h1>
-    
-    <!-- Tabela użytkowników – bez kolumny z przyciskami -->
-    <table class="users-table">
-      <thead>
-        <tr>
-          <th>Imię</th>
-          <th>Nazwisko</th>
-          <th>Nazwa użytkownika</th>
-          <th>Rola</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% users.forEach(user => { %>
+    <main>
+      <h1>Zarządzanie Użytkownikami</h1>
+
+      <!-- Tabela wyświetlająca listę użytkowników -->
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Imię</th>
+            <th>Nazwisko</th>
+            <th>Nazwa użytkownika</th>
+            <th>Rola</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach(user => { %>
           <tr class="user-item" data-id="<%= user.id %>">
             <td class="user-firstName"><%= user.firstName %></td>
             <td class="user-lastName"><%= user.lastName %></td>
             <td class="user-username"><%= user.username %></td>
             <td class="user-role"><%= user.role %></td>
           </tr>
-        <% }) %>
-      </tbody>
-    </table>
-    
-    <!-- Przycisk dodawania użytkownika przeniesiony pod tabelę -->
-    <button id="add-user-btn" class="add-btn">Dodaj użytkownika</button>
-    
-    <!-- Modal dodawania użytkownika -->
-    <div id="add-user-modal" class="modal hidden">
-      <form id="add-user-form" method="POST" action="/admin/users" autocomplete="off">
-        <h2>Dodaj użytkownika</h2>
-        <div class="input-box">
-          <input type="text" name="firstName" placeholder="Imię" required>
-        </div>
-        <div class="input-box">
-          <input type="text" name="lastName" placeholder="Nazwisko" required>
-        </div>
-        <div class="input-box">
-          <input type="text" name="username" placeholder="Nazwa użytkownika" required>
-        </div>
-        <div class="input-box password-box">
-          <input type="password" id="new-user-password" name="password" placeholder="Hasło" required>
-          <button type="button" id="generate-password-btn">Generuj hasło</button>
-          <button type="button" class="toggle-password" data-target="new-user-password">👁</button>
-        </div>
-        <div class="input-box">
-          <select name="role" required>
-            <option value="">Wybierz rolę</option>
-            <option value="user">Użytkownik</option>
-            <option value="admin">Administrator</option>
-          </select>
-        </div>
-        <div class="form-buttons">
-          <button type="submit" class="form-btn">Zapisz</button>
-        </div>
-      </form>
-    </div>
+          <% }) %>
+        </tbody>
+      </table>
 
-    <!-- Modal edycji użytkownika (przy otwarciu rekordu z tabeli) -->
-    <div id="edit-user-modal" class="modal hidden">
-      <form id="edit-user-form" method="POST" action="" autocomplete="off">
-        <h2>Edytuj użytkownika</h2>
-        <div class="input-box">
-          <input type="text" name="firstName" id="edit-user-firstName" placeholder="Imię" required>
-        </div>
-        <div class="input-box">
-          <input type="text" name="lastName" id="edit-user-lastName" placeholder="Nazwisko" required>
-        </div>
-        <div class="input-box">
-          <input type="text" name="username" id="edit-user-username" placeholder="Nazwa użytkownika" required>
-        </div>
-        <div class="input-box password-box">
-          <input type="password" id="edit-user-password" name="password" placeholder="Hasło (pozostaw puste, aby nie zmieniać)">
-          <button type="button" id="edit-generate-password-btn">Generuj hasło</button>
-          <button type="button" class="toggle-password" data-target="edit-user-password">👁</button>
-        </div>
-        <div class="input-box">
-          <select name="role" id="edit-user-role" required>
-            <option value="">Wybierz rolę</option>
-            <option value="user">Użytkownik</option>
-            <option value="admin">Administrator</option>
-          </select>
-        </div>
-        <div class="form-buttons">
-          <button type="submit" class="form-btn">Zapisz zmiany</button>
-          <!-- Przycisk usuwania przeniesiony do modalu edycji -->
-          <button type="button" class="form-btn" id="delete-user-btn">Usuń</button>
-        </div>
-      </form>
-    </div>
+      <!-- Przycisk do dodania nowego użytkownika -->
+      <button id="add-user-btn" class="add-btn">Dodaj użytkownika</button>
 
-  </main>
+      <!-- Modal do dodawania nowego użytkownika -->
+      <div id="add-user-modal" class="modal hidden">
+        <form
+          id="add-user-form"
+          method="POST"
+          action="/admin/users"
+          autocomplete="off"
+        >
+          <h2>Dodaj użytkownika</h2>
+          <div class="input-box">
+            <input type="text" name="firstName" placeholder="Imię" required />
+          </div>
+          <div class="input-box">
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Nazwisko"
+              required
+            />
+          </div>
+          <div class="input-box">
+            <input
+              type="text"
+              name="username"
+              placeholder="Nazwa użytkownika"
+              required
+            />
+          </div>
 
-  <footer>
-    <p>&copy; 2025 Jan Zioło. Wszelkie prawa zastrzeżone.</p>
-  </footer>
+          <div class="input-box password-box">
+            <div class="password-container">
+              <input
+                type="password"
+                id="new-user-password"
+                name="password"
+                placeholder="Hasło"
+                required
+              />
+              <button
+                type="button"
+                class="toggle-password"
+                data-target="new-user-password"
+              >
+                👁
+              </button>
+            </div>
+            <button type="button" id="generate-password-btn">
+              Generuj hasło
+            </button>
+          </div>
 
-  <script src="/js/adminUsers.js"></script>
-</body>
+          <div class="input-box">
+            <select name="role" required>
+              <option value="">Wybierz rolę</option>
+              <option value="user">Użytkownik</option>
+              <option value="admin">Administrator</option>
+            </select>
+          </div>
+          <div class="form-buttons">
+            <button type="submit" class="form-btn">Zapisz</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal edycji użytkownika (przy otwarciu rekordu z tabeli) -->
+      <div id="edit-user-modal" class="modal hidden">
+        <form id="edit-user-form" method="POST" action="" autocomplete="off">
+          <h2>Edytuj użytkownika</h2>
+          <div class="input-box">
+            <input
+              type="text"
+              name="firstName"
+              id="edit-user-firstName"
+              placeholder="Imię"
+              required
+            />
+          </div>
+          <div class="input-box">
+            <input
+              type="text"
+              name="lastName"
+              id="edit-user-lastName"
+              placeholder="Nazwisko"
+              required
+            />
+          </div>
+          <div class="input-box">
+            <input
+              type="text"
+              name="username"
+              id="edit-user-username"
+              placeholder="Nazwa użytkownika"
+              required
+            />
+          </div>
+          <div class="input-box password-box">
+            <div class="password-container">
+              <input
+                type="password"
+                id="edit-user-password"
+                name="password"
+                placeholder="Nowe hasło"
+              />
+              <button
+                type="button"
+                class="toggle-password"
+                data-target="edit-user-password"
+              >
+                👁
+              </button>
+            </div>
+            <button type="button" id="edit-generate-password-btn">
+              Generuj hasło
+            </button>
+          </div>
+          <div class="input-box">
+            <select name="role" id="edit-user-role" required>
+              <option value="">Wybierz rolę</option>
+              <option value="user">Użytkownik</option>
+              <option value="admin">Administrator</option>
+            </select>
+          </div>
+          <div class="form-buttons">
+            <button type="submit" class="form-btn">Zapisz zmiany</button>
+            <!-- Przycisk usuwania użytkownika -->
+            <button type="button" class="form-btn" id="delete-user-btn">
+              Usuń
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <footer>
+      <!-- Stopka z informacjami o prawach autorskich -->
+      <p>&copy; 2025 Jan Zioło. Wszelkie prawa zastrzeżone.</p>
+    </footer>
+
+    <!-- Dołączamy skrypt obsługujący użytkowników -->
+    <script src="/js/adminUsers.js"></script>
+  </body>
 </html>

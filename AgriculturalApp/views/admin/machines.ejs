@@ -1,111 +1,180 @@
+<!-- views/admin/machines.ejs -->
 <!DOCTYPE html>
 <html lang="pl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Administratora - Maszyny</title>
-  <link rel="stylesheet" href="/style.css"> <!-- Link do pliku CSS -->
-</head>
-<body>
-  <!-- Nagłówek i nawigacja -->
-  <header>
-    <div class="logo-container">
-      <img src="./images/Logo.png" alt="Logo" class="logo">
-    </div>
-    <nav class="navbar">
-      <ul>
-        <li><a href="/admin">Strona główna</a></li>
-        <li><a href="/admin/machines">Maszyny</a></li>
-        <li><a href="/admin/users">Użytkownicy</a></li>
-      </ul>
-    </nav>
-    <!-- Formularz wylogowania -->
-    <form action="/logout" method="GET" class="logout-form">
-      <button type="submit" class="logout-btn">Wyloguj się</button>
-    </form>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel Administratora - Maszyny</title>
+    <link rel="stylesheet" href="/style.css" />
+    <!-- Link do ogólnych stylów -->
+  </head>
+  <body>
+    <!-- Nagłówek strony i nawigacja -->
+    <header>
+      <div class="logo-container">
+        <a href="/admin">
+          <img src="/images/Logo.png" alt="Logo" class="logo" />
+        </a>
+      </div>
+      <nav class="navbar">
+        <ul>
+          <!-- Linki do sekcji w panelu administratora -->
+          <li><a href="/admin">Strona główna</a></li>
+          <li><a href="/admin/machines">Maszyny</a></li>
+          <li><a href="/admin/users">Użytkownicy</a></li>
+        </ul>
+      </nav>
+      <!-- Formularz wylogowania -->
+      <form action="/logout" method="GET" class="logout-form">
+        <button type="submit" class="logout-btn">Wyloguj się</button>
+      </form>
+    </header>
 
-  <!-- Główna zawartość -->
-  <main>
-    <h1>Maszyny</h1>
-    <div class="machines-container">
-      <% machines.forEach(machine => { %> 
+    <!-- Główna zawartość strony -->
+    <main>
+      <h1>Maszyny</h1>
+      <div class="machines-container">
+        <!-- Pętla, która wyświetla maszyny z bazy danych -->
+        <% machines.forEach(machine => { %>
         <div class="machine-item" data-id="<%= machine.id %>">
           <div class="machine-header">
             <h2 class="machine-name"><%= machine.name %></h2>
           </div>
           <div class="machine-body">
             <div class="machine-image">
-              <img src="<%= machine.image_url %>" alt="<%= machine.name %>" class="machine-img">
+              <!-- Obrazek maszyny -->
+              <img
+                src="<%= machine.image_url %>"
+                alt="<%= machine.name %>"
+                class="machine-img"
+              />
             </div>
             <div class="machine-description">
+              <!-- Opis maszyny -->
               <p><%= machine.description %></p>
             </div>
           </div>
         </div>
-      <% }) %>
-    </div>
+        <% }) %>
+      </div>
 
-    <button id="add-machine-btn" class="add-btn">Dodaj maszynę</button>
+      <!-- Przycisk do dodania nowej maszyny -->
+      <button id="add-machine-btn" class="add-btn">Dodaj maszynę</button>
 
-    <!-- Modal dodawania maszyny -->
-    <div id="add-machine-modal" class="modal hidden">
-      <form id="add-machine-form" enctype="multipart/form-data" method="POST" action="/admin/machines/add">
-        <h2>Dodaj maszynę</h2>
-        <div class="input-box">
-          <input type="text" name="name" placeholder="Nazwa" required>
-        </div>
-        <div class="input-box">
-          <textarea name="description" rows="4" placeholder="Opis"></textarea>
-        </div>
-        <div class="input-img">
-          <label for="image" class="file-upload-label">
-            <input type="file" id="image" name="image" accept="image/*" required>
-            <span>Wybierz zdjęcie</span>
-          </label>
-        </div>
-        <div class="form-buttons">
-          <button type="submit" class="form-btn" id="submit-btn">Zapisz</button>
-          <button type="button" class="form-btn" id="cancel-btn">Anuluj</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- Modal edycji maszyny -->
-    <div id="edit-machine-modal" class="modal hidden">
-      <form id="edit-machine-form" enctype="multipart/form-data" method="POST" action="">
-        <h2 id="edit-modal-title">Edytuj Maszynę</h2>
-        <div class="input-box">
-          <input type="text" name="name" id="edit-machine-name" placeholder="Nazwa" required>
-        </div>
-        <div class="input-box">
-          <textarea name="description" id="edit-machine-description" rows="4" placeholder="Opis"></textarea>
-        </div>
-        <!-- Kontener dla podglądu zdjęcia i przycisku wyboru -->
-        <div class="image-upload-group">
-          <div class="image-preview">
-            <img id="edit-image-preview" src="" alt="Podgląd zdjęcia" class="hidden">
+      <!-- Modal dodawania maszyny -->
+      <div id="add-machine-modal" class="modal hidden">
+        <form
+          id="add-machine-form"
+          enctype="multipart/form-data"
+          method="POST"
+          action="/admin/machines/add"
+        >
+          <h2>Dodaj maszynę</h2>
+          <div class="input-box">
+            <!-- Pole do wpisania nazwy maszyny -->
+            <input type="text" name="name" placeholder="Nazwa" required />
+          </div>
+          <div class="input-box">
+            <!-- Pole do wpisania opisu maszyny -->
+            <textarea name="description" rows="4" placeholder="Opis"></textarea>
           </div>
           <div class="input-img">
-            <label for="edit-image" class="file-upload-label">
-              <input type="file" id="edit-image" name="image" accept="image/*">
+            <label for="image" class="file-upload-label">
+              <!-- Pole do wyboru pliku (obrazka maszyny) -->
+              <input
+                type="file"
+                id="image"
+                name="image"
+                accept="image/*"
+                required
+              />
               <span>Wybierz zdjęcie</span>
-            </label>            
+            </label>
           </div>
-        </div>
-        <div class="form-buttons">
-          <button type="submit" class="form-btn" id="edit-submit-btn">Zapisz</button>
-          <button type="button" class="form-btn" id="edit-delete-btn">Usuń</button>
-        </div>
-      </form>
-    </div>
-  </main>
+          <div class="form-buttons">
+            <!-- Przycisk do zapisania maszyny -->
+            <button type="submit" class="form-btn" id="submit-btn">
+              Zapisz
+            </button>
+            <!-- Przycisk do anulowania akcji -->
+            <button type="button" class="form-btn" id="cancel-btn">
+              Anuluj
+            </button>
+          </div>
+        </form>
+      </div>
 
-  <!-- Stopka -->
-  <footer>
-    <p>&copy; 2025 Jan Zioło. Wszelkie prawa zastrzeżone.</p>
-  </footer>
+      <!-- Modal edycji maszyny -->
+      <div id="edit-machine-modal" class="modal hidden">
+        <form
+          id="edit-machine-form"
+          enctype="multipart/form-data"
+          method="POST"
+          action=""
+        >
+          <h2 id="edit-modal-title">Edytuj Maszynę</h2>
+          <div class="input-box">
+            <!-- Pole do edytowania nazwy maszyny -->
+            <input
+              type="text"
+              name="name"
+              id="edit-machine-name"
+              placeholder="Nazwa"
+              required
+            />
+          </div>
+          <div class="input-box">
+            <!-- Pole do edytowania opisu maszyny -->
+            <textarea
+              name="description"
+              id="edit-machine-description"
+              rows="4"
+              placeholder="Opis"
+            ></textarea>
+          </div>
+          <!-- Kontener dla podglądu zdjęcia i przycisku wyboru -->
+          <div class="image-upload-group">
+            <div class="image-preview">
+              <img
+                id="edit-image-preview"
+                src=""
+                alt="Podgląd zdjęcia"
+                class="hidden"
+              />
+            </div>
+            <div class="input-img">
+              <label for="edit-image" class="file-upload-label">
+                <!-- Pole do zmiany zdjęcia maszyny -->
+                <input
+                  type="file"
+                  id="edit-image"
+                  name="image"
+                  accept="image/*"
+                />
+                <span>Wybierz zdjęcie</span>
+              </label>
+            </div>
+          </div>
+          <div class="form-buttons">
+            <!-- Przycisk do zapisania zmian maszyny -->
+            <button type="submit" class="form-btn" id="edit-submit-btn">
+              Zapisz
+            </button>
+            <!-- Przycisk do usunięcia maszyny -->
+            <button type="button" class="form-btn" id="edit-delete-btn">
+              Usuń
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
 
-  <script src="/js/adminMachines.js"></script>
-</body>
+    <!-- Stopka strony -->
+    <footer>
+      <p>&copy; 2025 Jan Zioło. Wszelkie prawa zastrzeżone.</p>
+    </footer>
+
+    <!-- Dołączamy skrypt do zarządzania maszynami w panelu administratora -->
+    <script src="/js/adminMachines.js"></script>
+  </body>
 </html>

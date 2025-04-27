@@ -1,32 +1,22 @@
-// controllers/authController.js
-const passport = require('passport');
+const passport = require("passport");
 
-const renderLoginPage = (req, res) => {
-  res.render('login');
-};
+// Renderowanie strony logowania
+exports.renderLoginPage = (req, res) => res.render("login");
 
-const handleLogin = passport.authenticate('local', {
-  failureRedirect: '/login',
-  failureFlash: true
+// Obsługa logowania z wykorzystaniem strategii "local"
+exports.handleLogin = passport.authenticate("local", {
+  failureRedirect: "/login",
+  failureFlash: true,
 });
 
-const postLoginRedirect = (req, res) => {
-  console.log('Zalogowany użytkownik:', req.user);
-  if (req.user?.role === 'admin') return res.redirect('/admin');
-  if (req.user?.role === 'user') return res.redirect('/user');
-  return res.redirect('/login');
+// Przekierowanie po pomyślnym logowaniu, zależnie od roli użytkownika
+exports.postLoginRedirect = (req, res) => {
+  if (req.user?.role === "admin") return res.redirect("/admin");
+  if (req.user?.role === "user") return res.redirect("/user");
+  res.redirect("/login");
 };
 
-const logout = (req, res, next) => {
-  req.logout((err) => {
-    if (err) return next(err);
-    res.redirect('/');
-  });
-};
-
-module.exports = {
-  renderLoginPage,
-  handleLogin,
-  postLoginRedirect,
-  logout
+// Obsługa wylogowania użytkownika
+exports.logout = (req, res, next) => {
+  req.logout((err) => (err ? next(err) : res.redirect("/")));
 };

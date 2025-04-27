@@ -1,25 +1,50 @@
-// routes/admin.js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const uploadMachineImage = require('../middleware/multerMiddleware');
-const { isAdmin } = require('../middleware/authMiddleware');
-const adminController = require('../controllers/adminController');
+const uploadMachineImage = require("../middleware/multerMiddleware");
+const { isAdmin } = require("../middleware/authMiddleware");
+const adminController = require("../controllers/adminController");
 
-router.get('/', isAdmin, adminController.getAdminDashboard);
-//router.get('/reservations', isAdmin, adminController.getReservations);
-router.post('/reservations/delete', isAdmin, adminController.deleteReservation);
+// Panel główny administratora
+router.get("/", isAdmin, adminController.getAdminDashboard);
 
-router.get('/machines', isAdmin, adminController.getMachines);
-router.post('/machines/add', isAdmin, uploadMachineImage, adminController.addMachine);
-router.get('/machines/:id', isAdmin, adminController.getMachineDetails);
-router.post('/machines/:id/edit', isAdmin, uploadMachineImage, adminController.editMachine);
-router.post('/machines/:id/delete', isAdmin, adminController.deleteMachine);
+// Usuwanie rezerwacji
+router.post("/reservations/delete", isAdmin, adminController.deleteReservation);
 
+// Strona z listą maszyn
+router.get("/machines", isAdmin, adminController.getMachines);
 
-router.get('/users', isAdmin, adminController.getUsers);
-router.post('/users', isAdmin, adminController.addUser);
-router.post('/users/edit/:id', isAdmin, adminController.editUser);
-router.post('/users/delete/:id', isAdmin, adminController.deleteUser);
+// Dodawanie nowej maszyny, obsługuje przesyłanie pliku
+router.post(
+  "/machines/add",
+  isAdmin,
+  uploadMachineImage,
+  adminController.addMachine
+);
 
+// Szczegóły maszyny
+router.get("/machines/:id", isAdmin, adminController.getMachineDetails);
+
+// Edytowanie szczegółów maszyny, obsługuje przesyłanie pliku
+router.post(
+  "/machines/:id/edit",
+  isAdmin,
+  uploadMachineImage,
+  adminController.editMachine
+);
+
+// Usuwanie maszyny
+router.post("/machines/:id/delete", isAdmin, adminController.deleteMachine);
+
+// Strona z listą użytkowników
+router.get("/users", isAdmin, adminController.getUsers);
+
+// Dodawanie nowego użytkownika
+router.post("/users", isAdmin, adminController.addUser);
+
+// Edytowanie danych użytkownika
+router.post("/users/edit/:id", isAdmin, adminController.editUser);
+
+// Usuwanie użytkownika
+router.post("/users/delete/:id", isAdmin, adminController.deleteUser);
 
 module.exports = router;

@@ -1,35 +1,47 @@
 <!DOCTYPE html>
 <html lang="pl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Twoje Rezerwacje</title>
-  <link rel="stylesheet" href="/style.css">
-  <link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Twoje Rezerwacje</title>
 
-<body>
-  <header>
-    <div class="logo-container">
-      <a href="/user">
-        <img src="/images/Logo.png" alt="Logo" class="logo">
-      </a>
-    </div>
-    <nav class="navbar">
-      <ul>
-        <li><a href="/user">Strona główna</a></li>
-        <li><a href="/user/reservations">Moje rezerwacje</a></li>
-      </ul>
-    </nav>
-    <form action="/logout" method="GET" class="logout-form">
-      <button type="submit" class="logout-btn">Wyloguj się</button>
-    </form>
-  </header>
+    <!-- Główne style CSS -->
+    <link rel="stylesheet" href="/style.css" />
 
-  <main>
-    <h1>Twoje Rezerwacje</h1>
+    <!-- Motyw kalendarza Flatpickr -->
+    <link
+      rel="stylesheet"
+      href="https://npmcdn.com/flatpickr/dist/themes/dark.css"
+    />
+  </head>
 
-    <% if (reservations.length > 0) { %>
+  <body>
+    <!-- Nagłówek strony -->
+    <header>
+      <div class="logo-container">
+        <a href="/admin">
+          <img src="/images/Logo.png" alt="Logo" class="logo" />
+        </a>
+      </div>
+
+      <nav class="navbar">
+        <ul>
+          <li><a href="/user">Strona główna</a></li>
+          <li><a href="/user/reservations">Moje rezerwacje</a></li>
+        </ul>
+      </nav>
+
+      <!-- Formularz wylogowania -->
+      <form action="/logout" method="GET" class="logout-form">
+        <button type="submit" class="logout-btn">Wyloguj się</button>
+      </form>
+    </header>
+
+    <main>
+      <h1>Twoje Rezerwacje</h1>
+
+      <!-- Tabela rezerwacji -->
+      <% if (reservations.length > 0) { %>
       <table class="reservations-table">
         <thead>
           <tr>
@@ -40,59 +52,81 @@
         </thead>
         <tbody>
           <% reservations.forEach(reservation => { %>
-            <tr class="reservation-item" 
-                data-id="<%= reservation.id %>" 
-                data-machine-id="<%= reservation.machineId %>">
-              <td class="reservation-machine">
-                <%= reservation.machine_name || "Brak nazwy maszyny" %> (ID: <%= reservation.machineId || "Brak ID" %>)
-              </td>
-              <td class="reservation-start"><%= reservation.start_date %></td>
-              <td class="reservation-end"><%= reservation.end_date %></td>
-            </tr>
+          <tr
+            class="reservation-item"
+            data-id="<%= reservation.id %>"
+            data-machine-id="<%= reservation.machineId %>"
+          >
+            <td class="reservation-machine"><%= reservation.machine_name %></td>
+            <td class="reservation-start"><%= reservation.start_date %></td>
+            <td class="reservation-end"><%= reservation.end_date %></td>
+          </tr>
           <% }) %>
         </tbody>
       </table>
-    <% } else { %>
+      <% } else { %>
       <p>Nie dokonałeś jeszcze żadnych rezerwacji.</p>
-    <% } %>
+      <% } %>
 
-    <!-- Modal edycji rezerwacji -->
-    <div id="edit-reservation-modal" class="modal hidden">
-      <form id="edit-reservation-form" method="POST" action="/user/reservations/edit" autocomplete="off">
+      <!-- Modal do edycji rezerwacji -->
+      <div id="edit-reservation-modal" class="modal hidden">
+        <form
+          id="edit-reservation-form"
+          method="POST"
+          action="/user/reservations/edit"
+          autocomplete="off"
+        >
+          <!-- Ukryte inputy z ID rezerwacji -->
+          <% reservations.forEach(reservation => { %>
+          <input
+            type="hidden"
+            name="reservationIds[]"
+            value="<%= reservation.id %>"
+          />
+          <% }); %>
 
-        <% reservations.forEach(reservation => { %>
-          <input type="hidden" name="reservationIds[]" value="<%= reservation.id %>">
-        <% }); %>
+          <!-- Ukryte inputy z oryginalnymi datami -->
+          <input type="hidden" id="original-start-date"
+          name="original_start_date" value="<%= reservations[0]?.start_date ||
+          "" %>" /> <input type="hidden" id="original-end-date"
+          name="original_end_date" value="<%= reservations[0]?.end_date || ""
+          %>" />
 
-        <input type="hidden" id="original-start-date" name="original_start_date" value="<%= reservations[0]?.start_date || "" %>">
-        <input type="hidden" id="original-end-date" name="original_end_date" value="<%= reservations[0]?.end_date || "" %>">
+          <h2>Edytuj rezerwację</h2>
 
-        <h2>Edytuj rezerwację</h2>
+          <!-- Pola formularza -->
+          <div class="input-box date-box">
+            <label for="res-start-date">Początek rezerwacji</label>
+            <input type="text" id="res-start-date" name="start_date" required />
+          </div>
 
-        <div class="input-box date-box">
-          <label for="res-start-date">Początek rezerwacji</label>
-          <input type="text" id="res-start-date" name="start_date" required>
-        </div>
+          <div class="input-box date-box">
+            <label for="res-end-date">Koniec rezerwacji</label>
+            <input type="text" id="res-end-date" name="end_date" required />
+          </div>
 
-        <div class="input-box date-box">
-          <label for="res-end-date">Koniec rezerwacji</label>
-          <input type="text" id="res-end-date" name="end_date" required>
-        </div>
+          <!-- Przyciski formularza -->
+          <div class="form-buttons">
+            <button type="submit" class="form-btn">Zapisz zmiany</button>
+            <button
+              type="button"
+              class="form-btn danger-btn"
+              id="delete-reservation-btn"
+            >
+              Usuń rezerwację
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
 
-        <div class="form-buttons">
-          <button type="submit" class="form-btn">Zapisz zmiany</button>
-          <button type="button" class="form-btn danger-btn" id="delete-reservation-btn">Usuń rezerwację</button>
-        </div>
-      </form>
-    </div>
+    <!-- Stopka -->
+    <footer>
+      <p>&copy; 2025 Jan Zioło. Wszelkie prawa zastrzeżone.</p>
+    </footer>
 
-  </main>
-
-  <footer>
-    <p>&copy; 2025 Jan Zioło. Wszelkie prawa zastrzeżone.</p>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="/js/userReservations.js"></script>
-</body>
+    <!-- Skrypty JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="/js/userReservations.js"></script>
+  </body>
 </html>

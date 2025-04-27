@@ -1,17 +1,29 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const reservationItems = document.querySelectorAll(".reservation-item");
-  const editReservationModal = document.getElementById("edit-reservation-modal");
-  const deleteReservationBtn = document.getElementById("delete-reservation-btn");
+  const editReservationModal = document.getElementById(
+    "edit-reservation-modal"
+  );
+  const deleteReservationBtn = document.getElementById(
+    "delete-reservation-btn"
+  );
   const editReservationForm = document.getElementById("edit-reservation-form");
 
   let reservedDates = [];
 
-  async function fetchReservedDates(machineId, currentStartDate, currentEndDate) {
+  async function fetchReservedDates(
+    machineId,
+    currentStartDate,
+    currentEndDate
+  ) {
     try {
       console.log("ID maszyny:", machineId);
-      const response = await fetch(`/user/reservations/${machineId}?start=${currentStartDate}&end=${currentEndDate}`);
+      const response = await fetch(
+        `/user/reservations/${machineId}?start=${currentStartDate}&end=${currentEndDate}`
+      );
       if (!response.ok) {
-        throw new Error(`Błąd pobierania dat: ${response.status} - ${response.statusText}`);
+        throw new Error(
+          `Błąd pobierania dat: ${response.status} - ${response.statusText}`
+        );
       }
 
       const data = await response.json();
@@ -24,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  reservationItems.forEach(item => {
+  reservationItems.forEach((item) => {
     item.addEventListener("click", async () => {
       const reservationId = item.dataset.id;
       const machineId = item.dataset.machineId;
@@ -34,7 +46,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
-      const startDate = item.querySelector(".reservation-start").textContent.trim();
+      const startDate = item
+        .querySelector(".reservation-start")
+        .textContent.trim();
       const endDate = item.querySelector(".reservation-end").textContent.trim();
       const today = new Date();
       const tomorrow = new Date(today);
@@ -42,17 +56,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       const threeMonthsLater = new Date(today);
       threeMonthsLater.setMonth(today.getMonth() + 3);
 
-      // Ustawiamy akcję formularza
       editReservationForm.action = `/user/reservations/edit`;
 
-      // Ustawiamy wartości w polach formularza
       const startDateInput = document.getElementById("res-start-date");
       const endDateInput = document.getElementById("res-end-date");
       startDateInput.value = startDate;
       endDateInput.value = endDate;
 
-      // Ukryte pola z oryginalnymi datami
-      let originalStartDateInput = document.querySelector("input[name='original_start_date']");
+      let originalStartDateInput = document.querySelector(
+        "input[name='original_start_date']"
+      );
       if (!originalStartDateInput) {
         originalStartDateInput = document.createElement("input");
         originalStartDateInput.type = "hidden";
@@ -61,7 +74,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
       originalStartDateInput.value = startDate;
 
-      let originalEndDateInput = document.querySelector("input[name='original_end_date']");
+      let originalEndDateInput = document.querySelector(
+        "input[name='original_end_date']"
+      );
       if (!originalEndDateInput) {
         originalEndDateInput = document.createElement("input");
         originalEndDateInput.type = "hidden";
@@ -79,27 +94,30 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
       machineIdInput.value = machineId;
 
-      // Obsługa przycisku usuwania rezerwacji
       deleteReservationBtn.onclick = () => {
         if (confirm("Czy na pewno chcesz usunąć tę rezerwację?")) {
           window.location.href = `/user/reservations/delete?machineId=${machineId}&start=${startDate}&end=${endDate}`;
         }
       };
 
-      // Pobranie zajętych dat
       reservedDates = await fetchReservedDates(machineId, startDate, endDate);
 
-      const sortedDates = reservedDates.sort((a, b) => new Date(a) - new Date(b));
-      const nextReservationStart = sortedDates.find(date => new Date(date) > new Date(endDate));
+      const sortedDates = reservedDates.sort(
+        (a, b) => new Date(a) - new Date(b)
+      );
+      const nextReservationStart = sortedDates.find(
+        (date) => new Date(date) > new Date(endDate)
+      );
 
-      const maxDateEnd = nextReservationStart ? new Date(nextReservationStart) : threeMonthsLater;
+      const maxDateEnd = nextReservationStart
+        ? new Date(nextReservationStart)
+        : threeMonthsLater;
       const maxDateStart = new Date(endDate);
 
       console.log("Następna rezerwacja rozpoczyna się:", nextReservationStart);
       console.log("Ustawione maxDate dla końca:", maxDateEnd);
       console.log("Ustawione maxDate dla początku:", maxDateStart);
 
-      // Inicjalizacja kalendarzy flatpickr
       flatpickr("#res-start-date", {
         dateFormat: "Y-m-d",
         minDate: tomorrow,

@@ -1,40 +1,56 @@
-<!-- views/login.ejs -->
 <!DOCTYPE html>
 <html lang="pl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login Form</title>
-  <link rel="stylesheet" href="/login.css">
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Logowanie</title>
 
-<body>
-  <div class="background-wrapper">
-    <div class="overlay"></div>
-    
-    <div class="wrapper">
-      <form action="/login" method="POST">
-        <h1>Login</h1>
+    <!-- Główne style CSS -->
+    <link rel="stylesheet" href="/login.css" />
 
-        <div class="input-box">
-          <input type="text" name="username" placeholder="Login" required>
-          <i class='bx bxs-user'></i>
-        </div>
+    <!-- Ikony Boxicons -->
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="background-wrapper">
+      <div class="overlay"></div>
 
-        <div class="input-box">
-          <input type="password" name="password" placeholder="Hasło" required>
-          <i class='bx bxs-lock-alt'></i>
-        </div>
+      <div class="wrapper">
+        <!-- Formularz logowania -->
+        <form action="/login" method="POST">
+          <h1>Logowanie</h1>
 
-        <div class="remember-forgot">
-          <label><input type="checkbox"> Zapamiętaj mnie</label>
-          <a href="#">Zapomniałeś hasło?</a>
-        </div>
+          <!-- Pole na login -->
+          <div class="input-box">
+            <input
+              name="username"
+              type="text"
+              placeholder="Login"
+              required
+              autocomplete="username"
+            />
+            <i class="bx bxs-user"></i>
+          </div>
 
-        <button type="submit" class="btn">Login</button>
-      </form>
+          <!-- Pole na hasło -->
+          <div class="input-box">
+            <input
+              name="password"
+              type="password"
+              placeholder="Hasło"
+              required
+              autocomplete="current-password"
+            />
+            <i class="bx bxs-lock-alt"></i>
+          </div>
+
+          <!-- Przycisk logowania -->
+          <button type="submit" class="btn">Zaloguj się</button>
+        </form>
+      </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>

@@ -1,302 +1,216 @@
-const { Machine, Reservation } = require('../models');
-const { Op } = require('sequelize');
+const { Machine, Reservation } = require("../models");
+const { Op } = require("sequelize");
 
+// Wyświetlanie maszyn na stronie głównej użytkownika wraz z dostępnością - dostępność nie działaa, usunięta na frooncie
+//TODO usunąć obsługę dostępnośći
 exports.getUserHome = async (req, res) => {
   try {
-    const { message } = req.query;
     const machines = await Machine.findAll({
-      include: [{ model: Reservation, attributes: ['date'] }]
+      include: [{ model: Reservation, attributes: ["date"] }],
     });
-
-    const today = new Date();
-    const tomorrow = new Date(today);
+    const today = new Date(),
+      tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
+    const fmt = (d) => d.toISOString().split("T")[0];
 
-    const formatDate = (date) => date.toISOString().split("T")[0];
-
-    const machinesWithAvailability = machines.map(machine => {
-      const reservations = machine.Reservations
-        .map(r => formatDate(new Date(r.date)))
-        .filter(date => date >= formatDate(today)) // Uwzględniamy tylko przyszłe rezerwacje
+    const machinesWithAvailability = machines.map((m) => {
+      const dates = m.Reservations.map((r) => fmt(new Date(r.date)))
+        .filter((d) => d >= fmt(today))
         .sort();
-
-      console.log(`Maszyna: ${machine.name}, Wszystkie rezerwacje:`, reservations);
-
-      const tomorrowStr = formatDate(tomorrow);
-      
-      let availability = {};
-      if (!reservations.length || reservations.every(date => date > tomorrowStr)) {
-        availability = { freeTomorrow: true };
-      } else {
-        let availDate = new Date(tomorrow);
-        while (reservations.includes(formatDate(availDate))) {
-          availDate.setDate(availDate.getDate() + 1);
-        }
-        availability = {
-          freeTomorrow: false,
-          availableFrom: formatDate(availDate)
-        };
+      let availability = { freeTomorrow: true };
+      const tom = fmt(tomorrow);
+      if (dates.includes(tom)) {
+        availability = { freeTomorrow: false, availableFrom: null };
+        let x = new Date(tomorrow);
+        while (dates.includes(fmt(x))) x.setDate(x.getDate() + 1);
+        availability.availableFrom = fmt(x);
       }
-
-      machine.availability = availability;
-      console.log(`Maszyna: ${machine.name}, Dostępność:`, availability);
-
-      return machine;
+      m.availability = availability;
+      return m;
     });
 
     res.render("user/index", {
       title: "Strona Główna - Maszyny",
       machines: machinesWithAvailability,
-      message
     });
-  } catch (error) {
-    console.error(error);
-    res.send("<script>alert('Błąd serwera!'); window.location='/user';</script>");
+  } catch (err) {
+    console.error(err);
+    res.send(
+      "<script>alert('Błąd serwera!');window.location='/user';</script>"
+    );
   }
 };
 
-
-
-
+// Rezerwowanie maszyny przez użytkownika
 exports.makeReservation = async (req, res) => {
   try {
     const { machine_id, start_date, end_date } = req.body;
+    if (!machine_id || !start_date || !end_date)
+      return res.send(
+        "<script>alert('Wszystkie pola wymagane');window.location='/user';</script>"
+      );
+    const fmt = (d) => new Date(d).toISOString().split("T")[0];
+    const today = new Date(),
+      tom = new Date(today);
+    tom.setDate(today.getDate() + 1);
+    const max = new Date(tom);
+    max.setMonth(tom.getMonth() + 3);
+    const sd = fmt(start_date),
+      ed = fmt(end_date),
+      toms = fmt(tom),
+      maxs = fmt(max);
+    if (sd < toms || ed < sd || ed > maxs)
+      return res.send(
+        "<script>alert('Nieprawidłowe daty');window.location='/user';</script>"
+      );
 
-    if (!machine_id || !start_date || !end_date) {
-      return res.send("<script>alert('Wszystkie pola są wymagane!'); window.location='/user';</script>");
-    }
-
-    const formatDate = (date) => new Date(date).toISOString().split("T")[0];
-
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-    const maxDate = new Date(tomorrow);
-    maxDate.setMonth(tomorrow.getMonth() + 3);
-
-    const startDate = formatDate(start_date);
-    const endDate = formatDate(end_date);
-    const tomorrowStr = formatDate(tomorrow);
-    const maxDateStr = formatDate(maxDate);
-
-    if (startDate < tomorrowStr) {
-      return res.send("<script>alert('Data początkowa musi być przynajmniej jutrzejsza!'); window.location='/user';</script>");
-    }
-
-    if (endDate < startDate) {
-      return res.send("<script>alert('Data końcowa nie może być wcześniejsza niż początkowa!'); window.location='/user';</script>");
-    }
-
-    if (startDate > maxDateStr || endDate > maxDateStr) {
-      return res.send("<script>alert('Maksymalny okres rezerwacji to 3 miesiące w przyszłość!'); window.location='/user';</script>");
-    }
-
-    const reservedDates = await Reservation.findAll({
-      where: { machine_id: machine_id, date: { [Op.between]: [startDate, endDate] } },
-      attributes: ["date"]
+    const reserved = await Reservation.findAll({
+      where: { machine_id, date: { [Op.between]: [sd, ed] } },
+      attributes: ["date"],
     });
-
-    const reservedDateList = reservedDates.map(res => res.date);
-
+    const reservedList = reserved.map((r) => r.date);
     const dates = [];
-    let current = new Date(startDate);
-    while (formatDate(current) <= endDate) {
-      const formattedDate = formatDate(current);
-      if (reservedDateList.includes(formattedDate)) {
-        return res.send(`<script>alert('Wybrana data ${formattedDate} jest już zajęta!'); window.location='/user';</script>`);
-      }
-      dates.push(formattedDate);
-      current.setDate(current.getDate() + 1);
+    let cur = new Date(sd);
+    while (fmt(cur) <= ed) {
+      const d = fmt(cur);
+      if (reservedList.includes(d))
+        return res.send(
+          `<script>alert('${d} zajęta');window.location='/user';</script>`
+        );
+      dates.push(d);
+      cur.setDate(cur.getDate() + 1);
     }
-
-    const userId = req.user.id;
-    await Promise.all(dates.map(async dateStr => {
-      await Reservation.create({ machine_id, user_id: userId, date: dateStr });
-    }));
-
-    res.send("<script>alert('Rezerwacja została pomyślnie dokonana!'); window.location='/user';</script>");
-  } catch (error) {
-    console.error(error);
-    res.send("<script>alert('Błąd podczas rezerwacji!'); window.location='/user';</script>");
+    await Promise.all(
+      dates.map((d) =>
+        Reservation.create({ machine_id, user_id: req.user.id, date: d })
+      )
+    );
+    res.send(
+      "<script>alert('Rezerwacja udana');window.location='/user';</script>"
+    );
+  } catch (err) {
+    console.error(err);
+    res.send("<script>alert('Błąd');window.location='/user';</script>");
   }
 };
 
-// Pobranie zajętych dat dla danej maszyny (ignorując aktualną edytowaną rezerwację)
+// Pobieranie zarezerwowanych dat dla maszyny
 exports.getReservedDates = async (req, res) => {
   try {
     const { machineId } = req.params;
-    const { start, end } = req.query; // Dodajemy oryginalne daty rezerwacji w zapytaniu!
-
+    const { start, end } = req.query;
     const where = { machine_id: machineId };
-
-    const reservations = await Reservation.findAll({
-      where,
-      attributes: ["date"]
-    });
-
-    let reservedDates = reservations.map(r => r.date);
-
-    // Jeśli podano zakres start-end, to filtrujemy
-    if (start && end) {
-      reservedDates = reservedDates.filter(date => {
-        const d = new Date(date);
-        return d < new Date(start) || d > new Date(end);
-      });
-    }
-
-    console.log("Zajęte daty dla maszyny:", machineId, reservedDates);
-
-    res.json({ reservedDates });
-
-  } catch (error) {
-    console.error("Błąd pobierania rezerwacji:", error);
+    let resv = await Reservation.findAll({ where, attributes: ["date"] });
+    let dates = resv.map((r) => r.date);
+    if (start && end) dates = dates.filter((d) => d < start || d > end);
+    res.json({ reservedDates: dates });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ reservedDates: [] });
   }
 };
 
-
+// Pobieranie rezerwacji użytkownika
 exports.getUserReservations = async (req, res) => {
   try {
-    const reservations = await Reservation.findAll({
+    const all = await Reservation.findAll({
       where: { user_id: req.user.id },
-      include: [{ model: Machine, attributes: ['id', 'name'] }]
+      include: [{ model: Machine, attributes: ["id", "name"] }],
     });
-
-    console.log("Wszystkie rezerwacje użytkownika:", reservations);
-
-    // Pogrupowanie rezerwacji według `machine_id`
-    const groupedReservations = reservations.reduce((acc, reservation) => {
-      const machineId = reservation.machine_id;
-      if (!acc[machineId]) acc[machineId] = [];
-      acc[machineId].push(reservation.date);
-      return acc;
+    const grouped = all.reduce((a, r) => {
+      a[r.machine_id] = a[r.machine_id] || [];
+      a[r.machine_id].push(r.date);
+      return a;
     }, {});
-
-    // Przetwarzanie grupowanych rezerwacji w przedziały czasowe
-    const processedReservations = Object.entries(groupedReservations).map(([machineId, dates]) => {
-      const sortedDates = dates.sort(); // Sortujemy daty rosnąco
-      const timeFrames = [];
-      let startDate = sortedDates[0];
-
-      for (let i = 1; i < sortedDates.length; i++) {
-        const prevDate = new Date(sortedDates[i - 1]);
-        const currentDate = new Date(sortedDates[i]);
-
-        // Jeśli różnica między dniami > 1 dzień, kończymy poprzedni przedział i zaczynamy nowy
-        if (currentDate - prevDate > 24 * 60 * 60 * 1000) {
-          timeFrames.push({ machineId, start_date: startDate, end_date: sortedDates[i - 1] });
-          startDate = sortedDates[i];
+    const frames = Object.entries(grouped).flatMap(([mid, dates]) => {
+      dates.sort();
+      const arr = [];
+      let s = dates[0];
+      for (let i = 1; i < dates.length; i++) {
+        const p = new Date(dates[i - 1]),
+          c = new Date(dates[i]);
+        if (c - p > 24 * 60 * 60 * 1000) {
+          arr.push({ machineId: mid, start_date: s, end_date: dates[i - 1] });
+          s = dates[i];
         }
       }
-      
-      // Dodaj ostatni przedział czasowy
-      timeFrames.push({ machineId, start_date: startDate, end_date: sortedDates[sortedDates.length - 1] });
-      return timeFrames;
-    }).flat();
-
-    processedReservations.forEach(res => {
-      res.machineId = parseInt(res.machineId, 10);
+      arr.push({
+        machineId: mid,
+        start_date: s,
+        end_date: dates[dates.length - 1],
+      });
+      return arr;
     });
-
-    console.log("Przetworzone rezerwacje:", processedReservations);
-
-
-
-    // Pobieranie nazw maszyn
-    const finalReservations = await Promise.all(processedReservations.map(async (res) => {
-      const machine = await Machine.findOne({ where: { id: parseInt(res.machineId, 10) }, attributes: ['name'] });
-      console.log(`Sprawdzam maszynę o ID: ${res.machineId}, wynik:`, machine);
-
-      return { ...res, machine_name: machine ? machine.name : "Nieznana maszyna" };
-    }));    
-    console.log("final: ", finalReservations)
-    res.render("user/reservations", { title: "Twoje Rezerwacje", reservations: finalReservations });
-  } catch (error) {
-    console.error("Błąd pobierania rezerwacji:", error);
+    const reservations = await Promise.all(
+      frames.map(async (f) => {
+        const m = await Machine.findByPk(+f.machineId);
+        return { ...f, machine_name: m ? m.name : "Nieznana" };
+      })
+    );
+    res.render("user/reservations", {
+      title: "Twoje Rezerwacje",
+      reservations,
+    });
+  } catch (err) {
+    console.error(err);
     res.status(500).send("Błąd serwera");
   }
 };
 
-
+// Edycja rezerwacji użytkownika
 exports.editReservation = async (req, res) => {
   try {
-    const { original_start_date, original_end_date, start_date, end_date, machine_id } = req.body;
-
-    console.log("Oryginalne daty rezerwacji:", original_start_date, original_end_date);
-    console.log("Nowe daty rezerwacji:", start_date, end_date);
-
-    const today = new Date();
-    const maxDate = new Date(today);
-    maxDate.setMonth(today.getMonth() + 3);
-
-    const newStartDate = new Date(start_date);
-    const newEndDate = new Date(end_date);
-    const originalStartDate = new Date(original_start_date);
-    const originalEndDate = new Date(original_end_date);
-
-    if (newStartDate < today || newEndDate < newStartDate || newEndDate > maxDate) {
-      return res.status(400).send("Nieprawidłowe daty rezerwacji.");
-    }
-
-    // **Usuń tylko dni z pierwotnego zakresu rezerwacji**
+    const {
+      original_start_date,
+      original_end_date,
+      start_date,
+      end_date,
+      machine_id,
+    } = req.body;
+    const today = new Date(),
+      max = new Date();
+    max.setMonth(max.getMonth() + 3);
+    const ns = new Date(start_date),
+      ne = new Date(end_date);
+    if (ns < today || ne < ns || ne > max)
+      return res.status(400).send("Nieprawidłowe daty");
     await Reservation.destroy({
       where: {
         user_id: req.user.id,
-        machine_id: machine_id,
-        date: { [Op.between]: [originalStartDate, originalEndDate] } 
-      }
+        machine_id,
+        date: { [Op.between]: [original_start_date, original_end_date] },
+      },
     });
-
-    // **Dodaj nowe dni w ramach nowej rezerwacji**
-    let current = new Date(newStartDate);
-    while (current <= newEndDate) {
+    let cur = new Date(start_date);
+    while (cur <= ne) {
       await Reservation.create({
         user_id: req.user.id,
-        machine_id: machine_id,
-        date: current.toISOString().split("T")[0]
+        machine_id,
+        date: cur.toISOString().split("T")[0],
       });
-
-      current.setDate(current.getDate() + 1);
+      cur.setDate(cur.getDate() + 1);
     }
-
     res.redirect("/user/reservations");
-
-  } catch (error) {
-    console.error("Błąd edycji rezerwacji:", error);
-    res.status(500).send("Błąd edycji rezerwacji.");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Błąd edycji");
   }
 };
 
-
+// Usuwanie rezerwacji użytkownika
 exports.deleteReservation = async (req, res) => {
   try {
     const { machineId, start, end } = req.query;
-
-    if (!machineId || !start || !end) {
-      return res.status(400).send("Nieprawidłowe dane usuwanej rezerwacji.");
-    }
-
-    console.log("Usuwanie rezerwacji dla maszyny:", machineId);
-    console.log("Zakres usuwanej rezerwacji:", start, "do", end);
-
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-
-    if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
-      return res.status(400).send("Nieprawidłowe daty rezerwacji.");
-    }
-
     await Reservation.destroy({
       where: {
         user_id: req.user.id,
         machine_id: machineId,
-        date: { [Op.between]: [startDate, endDate] }
-      }
+        date: { [Op.between]: [start, end] },
+      },
     });
-
     res.redirect("/user/reservations");
-  } catch (error) {
-    console.error("Błąd usuwania rezerwacji:", error);
-    res.status(500).send("Błąd usuwania rezerwacji.");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Błąd usuwania");
   }
 };

@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const editImageInput = document.getElementById("edit-image");
   const editImagePreview = document.getElementById("edit-image-preview");
 
-  // Obsługa dodawania nowej maszyny
   if (addMachineBtn && addMachineModal && cancelAddBtn) {
     addMachineBtn.addEventListener("click", () => {
       addMachineModal.classList.remove("hidden");
@@ -26,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Obsługa edycji istniejącej maszyny
   document.querySelectorAll(".machine-item").forEach((machine) => {
     machine.addEventListener("click", async () => {
       const machineId = machine.dataset.id;
@@ -44,27 +42,32 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         const data = await response.json();
 
-        // Wypełnij dane w formularzu edycji
         document.getElementById("edit-machine-name").value = data.name;
-        document.getElementById("edit-machine-description").value = data.description;
-        document.getElementById("edit-machine-form").action = `/admin/machines/${machineId}/edit`;
+        document.getElementById("edit-machine-description").value =
+          data.description;
+        document.getElementById(
+          "edit-machine-form"
+        ).action = `/admin/machines/${machineId}/edit`;
 
-        // Ustaw podgląd obecnego zdjęcia maszyny
         if (editImagePreview) {
           editImagePreview.src = data.image_url || "";
           editImagePreview.classList.remove("hidden");
         }
 
-        // Obsługa usuwania maszyny
         editDeleteBtn.onclick = async () => {
-          const confirmDelete = confirm("Czy na pewno chcesz usunąć tę maszynę?");
+          const confirmDelete = confirm(
+            "Czy na pewno chcesz usunąć tę maszynę?"
+          );
           if (confirmDelete) {
             try {
-              const deleteResponse = await fetch(`/admin/machines/${machineId}/delete`, { method: "POST" });
+              const deleteResponse = await fetch(
+                `/admin/machines/${machineId}/delete`,
+                { method: "POST" }
+              );
               if (!deleteResponse.ok) {
                 throw new Error("Błąd podczas usuwania maszyny");
               }
-              location.reload(); // Odśwież stronę po usunięciu
+              location.reload();
             } catch (deleteError) {
               console.error("Błąd podczas usuwania maszyny:", deleteError);
               alert("Nie udało się usunąć maszyny.");
@@ -72,7 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         };
 
-        // Wyświetl modal edycji
         editMachineModal.classList.remove("hidden");
       } catch (error) {
         console.error("Błąd podczas pobierania danych maszyny:", error);
@@ -81,12 +83,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Obsługa wyboru nowego zdjęcia
   if (editImageInput) {
     editImageInput.addEventListener("change", (event) => {
       const file = event.target.files[0];
       if (file) {
-        // Uaktualnij podgląd zdjęcia
         const preview = document.getElementById("edit-image-preview");
         preview.src = URL.createObjectURL(file);
         preview.classList.remove("hidden");
@@ -94,7 +94,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Zamknięcie modalu edycji
   if (editMachineModal) {
     editMachineModal.addEventListener("click", (event) => {
       if (event.target === editMachineModal) {

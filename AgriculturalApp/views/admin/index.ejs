@@ -1,34 +1,37 @@
 <!DOCTYPE html>
 <html lang="pl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Administratora</title>
-  <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-  <header>
-    <div class="logo-container">
-      <a href="/admin">
-        <img src="/images/Logo.png" alt="Logo" class="logo">
-      </a>
-    </div>
-    <nav class="navbar">
-      <ul>
-        <li><a href="/admin">Strona główna</a></li>
-        <li><a href="/admin/machines">Maszyny</a></li>
-        <li><a href="/admin/users">Użytkownicy</a></li>
-      </ul>
-    </nav>
-    <form action="/logout" method="GET" class="logout-form">
-      <button type="submit" class="logout-btn">Wyloguj się</button>
-    </form>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel Administratora</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <!-- Logo i nawigacja -->
+      <div class="logo-container">
+        <a href="/admin">
+          <img src="/images/Logo.png" alt="Logo" class="logo" />
+        </a>
+      </div>
+      <nav class="navbar">
+        <ul>
+          <li><a href="/admin">Strona główna</a></li>
+          <li><a href="/admin/machines">Maszyny</a></li>
+          <li><a href="/admin/users">Użytkownicy</a></li>
+        </ul>
+      </nav>
+      <!-- Formularz wylogowania -->
+      <form action="/logout" method="GET" class="logout-form">
+        <button type="submit" class="logout-btn">Wyloguj się</button>
+      </form>
+    </header>
 
-  <main>
-    <h1>Rezerwacje Administratora</h1>
+    <main>
+      <h1>Rezerwacje Administratora</h1>
 
-    <% if (dateRanges.length > 0) { %>
+      <!-- Sprawdzamy, czy są dostępne rezerwacje -->
+      <% if (dateRanges.length > 0) { %>
       <table class="reservations-table">
         <thead>
           <tr>
@@ -40,42 +43,50 @@
           </tr>
         </thead>
         <tbody>
+          <!-- Iterujemy przez dostępne rezerwacje -->
           <% dateRanges.forEach(range => { %>
-            <tr class="reservation-item" data-id="<%= range.id %>" data-machine-id="<%= range.machineId %>">
-              <td class="reservation-machine">
-                <%= range.machineName || "Brak nazwy maszyny" %>
-              </td>
-              <td class="reservation-start"><%= range.startDate %></td>
-              <td class="reservation-end"><%= range.endDate %></td>
-              <td class="reservation-user">
-                <%= range.user.firstName %> <%= range.user.lastName %>
-              </td>
-              <td class="reservation-actions">
-                <button 
-                  class="delete-reservation-btn" 
-                  data-id="<%= range.id %>" 
-                  data-user-id="<%= range.user.id %>" 
-                  data-machine-id="<%= range.machineId %>" 
-                  data-start-date="<%= range.startDate %>" 
-                  data-end-date="<%= range.endDate %>"
-                >
-                  Usuń
-                </button>
-              </td>
-            </tr>
+          <tr
+            class="reservation-item"
+            data-id="<%= range.id %>"
+            data-machine-id="<%= range.machineId %>"
+          >
+            <td class="reservation-machine">
+              <%= range.machineName || "Brak nazwy maszyny" %>
+            </td>
+            <td class="reservation-start"><%= range.startDate %></td>
+            <td class="reservation-end"><%= range.endDate %></td>
+            <td class="reservation-user">
+              <%= range.user.firstName %> <%= range.user.lastName %>
+            </td>
+            <td class="reservation-actions">
+              <!-- Przycisk do usunięcia rezerwacji -->
+              <button
+                class="delete-reservation-btn"
+                data-id="<%= range.id %>"
+                data-user-id="<%= range.user.id %>"
+                data-machine-id="<%= range.machineId %>"
+                data-start-date="<%= range.startDate %>"
+                data-end-date="<%= range.endDate %>"
+              >
+                Usuń
+              </button>
+            </td>
+          </tr>
           <% }) %>
         </tbody>
       </table>
-    <% } else { %>
+      <% } else { %>
+      <!-- Jeśli brak rezerwacji -->
       <p>Brak rezerwacji w systemie.</p>
-    <% } %>
-    
-  </main>
+      <% } %>
+    </main>
 
-  <footer>
-    <p>&copy; 2025 Jan Zioło. Wszelkie prawa zastrzeżone.</p>
-  </footer>
+    <footer>
+      <!-- Stopka z informacjami o prawach autorskich -->
+      <p>&copy; 2025 Jan Zioło. Wszelkie prawa zastrzeżone.</p>
+    </footer>
 
-  <script src="/js/admin.js"></script>
-</body>
+    <!-- Skrypt do obsługi administratora -->
+    <script src="/js/admin.js"></script>
+  </body>
 </html>
